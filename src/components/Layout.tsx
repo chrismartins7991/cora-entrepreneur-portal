@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Home, MessageCircle, Map, BarChart2, Plug, Zap, Users, Brain, User } from "lucide-react";
+import { Home, MessageCircle, Map, BarChart2, Plug, Zap, Users, Brain, User, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { icon: Home, label: "HOME", href: "/" },
@@ -14,15 +17,37 @@ const navItems = [
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <div className="flex min-h-screen w-full bg-black">
+      {/* Mobile Menu Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed left-4 top-4 z-50 md:hidden"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        {isSidebarOpen ? (
+          <X className="h-6 w-6 text-white" />
+        ) : (
+          <Menu className="h-6 w-6 text-white" />
+        )}
+      </Button>
+
       {/* Sidebar */}
-      <nav className="fixed left-0 top-0 h-screen w-64 flex-none bg-black/50 p-4 backdrop-blur-lg">
-        <div className="mb-8 text-2xl font-bold text-white">CORA</div>
+      <nav
+        className={cn(
+          "fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full transform bg-black/50 p-4 backdrop-blur-lg transition-transform duration-200 ease-in-out md:translate-x-0",
+          isSidebarOpen && "translate-x-0"
+        )}
+      >
+        <div className="mb-8 mt-16 text-2xl font-bold text-white md:mt-0">CORA</div>
         {navItems.map((item) => (
           <Link
             key={item.label}
             to={item.href}
+            onClick={() => setIsSidebarOpen(false)}
             className="group mb-2 flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10"
           >
             <item.icon className="h-5 w-5" />
@@ -37,9 +62,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Main content */}
-      <main className="ml-64 flex-1">
+      <main className="w-full p-4 md:ml-64 md:p-8">
         {children}
       </main>
+
+      {/* Overlay for mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }
