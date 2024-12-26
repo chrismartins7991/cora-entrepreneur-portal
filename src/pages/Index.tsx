@@ -35,8 +35,8 @@ const navItems = [
 export default function Index() {
   return (
     <div className="flex min-h-screen bg-black">
-      {/* Sidebar */}
-      <nav className="fixed left-0 top-0 flex h-screen w-64 flex-col gap-2 bg-black/50 p-4 backdrop-blur-lg">
+      {/* Sidebar - Changed from fixed to sticky positioning */}
+      <nav className="sticky top-0 h-screen w-64 flex-shrink-0 flex flex-col gap-2 bg-black/50 p-4 backdrop-blur-lg">
         <div className="mb-8 text-2xl font-bold text-white">CORA</div>
         {navItems.map((item) => (
           <Link
