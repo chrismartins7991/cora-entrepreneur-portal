@@ -34,15 +34,15 @@ const navItems = [
 
 export default function Index() {
   return (
-    <div className="flex min-h-screen bg-black">
-      {/* Sidebar - Changed from fixed to sticky positioning */}
-      <nav className="sticky top-0 h-screen w-64 flex-shrink-0 flex flex-col gap-2 bg-black/50 p-4 backdrop-blur-lg">
+    <div className="flex min-h-screen w-full bg-black">
+      {/* Sidebar */}
+      <nav className="fixed left-0 top-0 h-screen w-64 flex-none bg-black/50 p-4 backdrop-blur-lg">
         <div className="mb-8 text-2xl font-bold text-white">CORA</div>
         {navItems.map((item) => (
           <Link
             key={item.label}
             to={item.href}
-            className="group flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10"
+            className="group mb-2 flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10"
           >
             <item.icon className="h-5 w-5" />
             <span>{item.label}</span>
