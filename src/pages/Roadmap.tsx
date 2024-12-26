@@ -15,11 +15,11 @@ const sectors = [
 ];
 
 export default function Roadmap() {
-  const [currentView, setCurrentView] = useState<"cockpit" | "neuron" | "mindmap" | "list" | "notes">("neuron");
+  const [currentView, setCurrentView] = useState<'cockpit' | 'neuron' | 'mindmap' | 'list' | 'notes'>('neuron');
   const [openSector, setOpenSector] = useState<string | null>(null);
-  const [chatMessage, setChatMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState<Array<{ sender: string; message: string }>>([]);
-  const toast = useToast();
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState<Array<{sender: string, message: string}>>([]);
+  const { toast } = useToast();
 
   const handleSectorClick = (sectorName: string) => {
     setOpenSector(openSector === sectorName ? null : sectorName);
@@ -27,15 +27,16 @@ export default function Roadmap() {
 
   const handleSendMessage = () => {
     if (chatMessage.trim()) {
-      setChatHistory([...chatHistory, { sender: "User", message: chatMessage }]);
+      setChatHistory([...chatHistory, {sender: 'User', message: chatMessage}]);
       setTimeout(() => {
-        setChatHistory(prev => [...prev, { sender: "Cora", message: "Thank you for your message. How can I assist you further?" }]);
+        setChatHistory(prev => [...prev, {sender: 'Cora', message: 'Thank you for your message. How can I assist you further?'}]);
       }, 1000);
-      setChatMessage("");
+      setChatMessage('');
     } else {
       toast({
         title: "Empty message",
         description: "Please enter a message before sending.",
+        variant: "destructive",
       });
     }
   };
