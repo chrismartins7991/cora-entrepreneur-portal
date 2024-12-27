@@ -10,6 +10,12 @@ const customerChartData = [
   { month: 'May', customers: 28, churn: 2 },
 ];
 
+const chartConfig = {
+  customers: {
+    color: '#103DEF',
+  },
+};
+
 export function ActiveUsersChart() {
   return (
     <Card className="overflow-hidden bg-black/40 backdrop-blur border-white/10 h-full">
@@ -21,7 +27,7 @@ export function ActiveUsersChart() {
           <div className="text-2xl font-bold text-white">2,350</div>
           <p className="text-sm text-green-400">+18% new users</p>
           <div className="h-[calc(100%-5rem)]">
-            <ChartContainer>
+            <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart 
                   data={customerChartData} 

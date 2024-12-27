@@ -10,6 +10,12 @@ const financialChartData = [
   { name: 'May', value: 189, growth: '-32%' },
 ];
 
+const chartConfig = {
+  value: {
+    color: '#8B5CF6',
+  },
+};
+
 export function RevenueChart() {
   return (
     <Card className="overflow-hidden bg-black/40 backdrop-blur border-white/10 h-full">
@@ -21,7 +27,7 @@ export function RevenueChart() {
           <div className="text-2xl font-bold text-white">$45,231.89</div>
           <p className="text-sm text-green-400">+20.1% from last month</p>
           <div className="h-[calc(100%-5rem)]">
-            <ChartContainer>
+            <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={financialChartData} 
