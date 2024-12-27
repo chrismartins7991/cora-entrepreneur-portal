@@ -1,110 +1,168 @@
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GlassCard } from "@/components/GlassCard";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 
 const financialChartData = [
-  { name: 'Jan', value: 400 },
-  { name: 'Feb', value: 300 },
-  { name: 'Mar', value: 200 },
-  { name: 'Apr', value: 278 },
-  { name: 'May', value: 189 },
+  { name: 'Jan', value: 400, growth: '+12%' },
+  { name: 'Feb', value: 300, growth: '-25%' },
+  { name: 'Mar', value: 200, growth: '-33%' },
+  { name: 'Apr', value: 278, growth: '+39%' },
+  { name: 'May', value: 189, growth: '-32%' },
 ];
 
 const projectChartData = [
-  { day: 'Mon', tasks: 10 },
-  { day: 'Tue', tasks: 15 },
-  { day: 'Wed', tasks: 8 },
-  { day: 'Thu', tasks: 12 },
-  { day: 'Fri', tasks: 20 },
+  { day: 'Mon', tasks: 10, completed: 8 },
+  { day: 'Tue', tasks: 15, completed: 12 },
+  { day: 'Wed', tasks: 8, completed: 5 },
+  { day: 'Thu', tasks: 12, completed: 10 },
+  { day: 'Fri', tasks: 20, completed: 15 },
 ];
 
 const customerChartData = [
-  { month: 'Jan', customers: 20 },
-  { month: 'Feb', customers: 25 },
-  { month: 'Mar', customers: 30 },
-  { month: 'Apr', customers: 22 },
-  { month: 'May', customers: 28 },
+  { month: 'Jan', customers: 20, churn: 2 },
+  { month: 'Feb', customers: 25, churn: 3 },
+  { month: 'Mar', customers: 30, churn: 1 },
+  { month: 'Apr', customers: 22, churn: 4 },
+  { month: 'May', customers: 28, churn: 2 },
 ];
+
+const chartConfig = {
+  sales: {
+    label: "Sales",
+    color: "#8B5CF6",
+  },
+  tasks: {
+    label: "Tasks",
+    color: "#20B2AA",
+  },
+  customers: {
+    label: "Customers",
+    color: "#103DEF",
+  },
+};
 
 export default function Dashboards() {
   return (
-    <div className="min-h-screen bg-black px-4 py-6 sm:p-8">
-      <h1 className="text-xl sm:text-2xl font-bold text-white mb-4">Dashboards</h1>
-      
-      <Select defaultValue="month">
-        <SelectTrigger className="w-full sm:w-[180px] mb-4">
-          <SelectValue placeholder="Select view period" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="day">Day</SelectItem>
-          <SelectItem value="week">Week</SelectItem>
-          <SelectItem value="month">Month</SelectItem>
-          <SelectItem value="year">Year</SelectItem>
-        </SelectContent>
-      </Select>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <GlassCard className="p-4 sm:p-6">
-          <h2 className="mb-2 text-sm sm:text-base text-white">Financial Overview</h2>
-          <div className="h-[250px] sm:h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={financialChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="name" stroke="#fff" fontSize={12} />
-                <YAxis stroke="#fff" fontSize={12} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-4 sm:p-6">
-          <h2 className="mb-2 text-sm sm:text-base text-white">Project Tasks</h2>
-          <div className="h-[250px] sm:h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={projectChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="day" stroke="#fff" fontSize={12} />
-                <YAxis stroke="#fff" fontSize={12} />
-                <Tooltip />
-                <Line type="monotone" dataKey="tasks" stroke="#8884d8" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-4 sm:p-6">
-          <h2 className="mb-2 text-sm sm:text-base text-white">Customer Acquisition</h2>
-          <div className="h-[250px] sm:h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={customerChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="month" stroke="#fff" fontSize={12} />
-                <YAxis stroke="#fff" fontSize={12} />
-                <Tooltip />
-                <Bar dataKey="customers" fill="#82ca9d" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-4 sm:p-6">
-          <h2 className="mb-2 text-sm sm:text-base text-white">Overall Performance</h2>
-          <div className="h-[250px] sm:h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={financialChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="name" stroke="#fff" fontSize={12} />
-                <YAxis stroke="#fff" fontSize={12} />
-                <Tooltip />
-                <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
+    <div className="min-h-screen w-full space-y-6 p-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <h1 className="text-2xl font-bold text-white">Analytics Dashboard</h1>
+        <Select defaultValue="month">
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select period" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="day">Last 24 hours</SelectItem>
+            <SelectItem value="week">Last week</SelectItem>
+            <SelectItem value="month">Last month</SelectItem>
+            <SelectItem value="year">Last year</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="bg-black/40 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="text-base font-medium">Revenue</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">$45,231.89</div>
+            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            <div className="h-[200px] mt-4">
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={financialChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <ChartTooltip />
+                    <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-black/40 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="text-base font-medium">Task Completion</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">82%</div>
+            <p className="text-xs text-muted-foreground">+12% from last week</p>
+            <div className="h-[200px] mt-4">
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={projectChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="day" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <ChartTooltip />
+                    <Line 
+                      type="monotone" 
+                      dataKey="tasks" 
+                      stroke="#20B2AA" 
+                      strokeWidth={2}
+                      dot={{ fill: "#20B2AA" }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-black/40 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="text-base font-medium">Active Users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">2,350</div>
+            <p className="text-xs text-muted-foreground">+18% new users</p>
+            <div className="h-[200px] mt-4">
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={customerChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <ChartTooltip />
+                    <Line 
+                      type="monotone" 
+                      dataKey="customers" 
+                      stroke="#103DEF" 
+                      strokeWidth={2}
+                      dot={{ fill: "#103DEF" }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="bg-black/40 backdrop-blur">
+        <CardHeader>
+          <CardTitle className="text-base font-medium">Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ChartContainer config={chartConfig}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={financialChartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                  <ChartTooltip />
+                  <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
