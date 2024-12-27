@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { createHologramShader } from './HologramShader';
 
 interface HologramSceneProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -23,69 +24,38 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Create hologram material
-    const hologramMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        time: { value: 0 },
-        glowColor: { value: new THREE.Color(0x00ffff) },
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        varying float vPosY;
-        void main() {
-          vUv = uv;
-          vPosY = position.y;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform float time;
-        uniform vec3 glowColor;
-        varying vec2 vUv;
-        varying float vPosY;
-        
-        void main() {
-          float scanLine = smoothstep(0.0, 0.1, fract(vPosY * 10.0 - time));
-          float glow = 0.6 + 0.4 * sin(time + vUv.y * 20.0);
-          vec3 color = glowColor * glow;
-          float alpha = 0.6 * glow + 0.3 * scanLine;
-          gl_FragColor = vec4(color, alpha);
-        }
-      `,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
-
-    // Load human model
-    const loader = new GLTFLoader();
-    console.log('Starting to load human model...');
+    // Create a basic humanoid shape using geometry
+    const geometry = new THREE.CapsuleGeometry(0.5, 1, 4, 8);
+    const hologramMaterial = createHologramShader();
+    const humanoid = new THREE.Mesh(geometry, hologramMaterial);
     
-    loader.load(
-      '/models/human.glb',
-      (gltf) => {
-        console.log('Human model loaded successfully');
-        const human = gltf.scene;
-        
-        // Apply material to all meshes
-        human.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.material = hologramMaterial;
-          }
-        });
-
-        // Position and scale the model
-        human.scale.set(2, 2, 2);
-        human.position.set(0, -1, 0);
-        human.rotation.y = Math.PI; // Make the model face the camera
-        scene.add(human);
-      },
-      (progress) => {
-        console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
-      },
-      (error) => {
-        console.error('Error loading human model:', error);
-      }
-    );
+    // Add limbs
+    const armGeometry = new THREE.CapsuleGeometry(0.15, 0.7, 4, 8);
+    const leftArm = new THREE.Mesh(armGeometry, hologramMaterial);
+    const rightArm = new THREE.Mesh(armGeometry, hologramMaterial);
+    
+    leftArm.position.set(-0.7, 0, 0);
+    rightArm.position.set(0.7, 0, 0);
+    
+    const legGeometry = new THREE.CapsuleGeometry(0.2, 1, 4, 8);
+    const leftLeg = new THREE.Mesh(legGeometry, hologramMaterial);
+    const rightLeg = new THREE.Mesh(legGeometry, hologramMaterial);
+    
+    leftLeg.position.set(-0.3, -1, 0);
+    rightLeg.position.set(0.3, -1, 0);
+    
+    // Create a group to hold all parts
+    const humanoidGroup = new THREE.Group();
+    humanoidGroup.add(humanoid);
+    humanoidGroup.add(leftArm);
+    humanoidGroup.add(rightArm);
+    humanoidGroup.add(leftLeg);
+    humanoidGroup.add(rightLeg);
+    
+    // Scale and position the group
+    humanoidGroup.scale.set(1, 1, 1);
+    humanoidGroup.position.set(0, 1, 0);
+    scene.add(humanoidGroup);
 
     // Add lights
     const ambientLight = new THREE.AmbientLight(0x404040, 2);
@@ -104,6 +74,9 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     const animate = () => {
       requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
+
+      // Rotate the humanoid
+      humanoidGroup.rotation.y = Math.sin(elapsed * 0.5) * 0.5;
 
       // Update shader uniforms
       scene.traverse((object) => {
