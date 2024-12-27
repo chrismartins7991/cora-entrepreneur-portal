@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { GlassCard } from "@/components/GlassCard";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Users, Send } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { GlassCard } from "@/components/GlassCard";
+import { TeamMemberAvatar } from "@/components/delegate/TeamMemberAvatar";
+import { TeamMemberDialog } from "@/components/delegate/TeamMemberDialog";
+import { ConnectionLines } from "@/components/delegate/ConnectionLines";
 
 interface TeamMember {
   id: string;
@@ -54,7 +53,6 @@ const teamMembers: TeamMember[] = [
 export default function Delegate() {
   const { toast } = useToast();
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-  const isMobile = useIsMobile();
 
   const handleDelegate = (memberId: string) => {
     console.log("Delegating task to member:", memberId);
@@ -63,155 +61,58 @@ export default function Delegate() {
       description: "The task has been assigned successfully.",
       duration: 3000,
     });
+    setSelectedMember(null);
   };
 
   return (
-    <div className="min-h-screen bg-black p-4 lg:p-8">
+    <div className="min-h-screen w-full bg-black p-4 lg:p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-2 md:text-3xl lg:text-4xl">
-          <Users className="w-6 h-6 md:w-8 md:h-8" />
+        <h1 className="mb-2 flex items-center gap-2 text-2xl font-bold text-white md:text-3xl lg:text-4xl">
+          <Users className="h-6 w-6 md:h-8 md:w-8" />
           Team Delegation Hub
         </h1>
-        <p className="text-white/60 text-sm md:text-base lg:text-lg">
+        <p className="text-sm text-white/60 md:text-base lg:text-lg">
           Delegate tasks to team members based on their skills and expertise
         </p>
       </div>
 
-      {/* Team Web Layout */}
-      <div className="relative w-full h-[calc(100vh-12rem)] min-h-[400px] max-h-[800px] flex items-center justify-center">
-        <div className="absolute w-full h-full flex items-center justify-center">
-          {/* Connection Lines - Responsive scaling */}
-          <svg className="absolute w-full h-full max-w-[800px]" style={{ zIndex: 0 }}>
-            {!isMobile && (
-              <>
-                <line 
-                  x1="50%" 
-                  y1="50%" 
-                  x2="25%" 
-                  y2="25%" 
-                  stroke="rgba(139, 92, 246, 0.2)" 
-                  strokeWidth="2" 
-                  className="transition-all duration-300"
-                />
-                <line 
-                  x1="50%" 
-                  y1="50%" 
-                  x2="75%" 
-                  y2="25%" 
-                  stroke="rgba(139, 92, 246, 0.2)" 
-                  strokeWidth="2"
-                  className="transition-all duration-300"
-                />
-                <line 
-                  x1="50%" 
-                  y1="50%" 
-                  x2="25%" 
-                  y2="75%" 
-                  stroke="rgba(139, 92, 246, 0.2)" 
-                  strokeWidth="2"
-                  className="transition-all duration-300"
-                />
-                <line 
-                  x1="50%" 
-                  y1="50%" 
-                  x2="75%" 
-                  y2="75%" 
-                  stroke="rgba(139, 92, 246, 0.2)" 
-                  strokeWidth="2"
-                  className="transition-all duration-300"
-                />
-              </>
-            )}
-          </svg>
+      <div className="relative mx-auto flex h-[calc(100vh-12rem)] min-h-[400px] max-h-[800px] max-w-5xl items-center justify-center px-4">
+        <ConnectionLines />
 
-          {/* Team Members - Responsive positioning */}
-          <div className="relative w-full h-full max-w-[800px]">
-            {teamMembers.map((member, index) => {
-              const positions = {
-                mobile: [
-                  'top-[15%] left-[25%]',
-                  'top-[15%] right-[25%]',
-                  'bottom-[15%] left-[25%]',
-                  'bottom-[15%] right-[25%]',
-                ],
-                tablet: [
-                  'top-[20%] left-[25%]',
-                  'top-[20%] right-[25%]',
-                  'bottom-[20%] left-[25%]',
-                  'bottom-[20%] right-[25%]',
-                ],
-                desktop: [
-                  'top-[25%] left-[25%]',
-                  'top-[25%] right-[25%]',
-                  'bottom-[25%] left-[25%]',
-                  'bottom-[25%] right-[25%]',
-                ],
-              };
+        <div className="relative grid h-full w-full max-w-[800px] grid-cols-2 grid-rows-2 gap-8 sm:gap-12 lg:gap-16">
+          {teamMembers.map((member, index) => {
+            const positions = [
+              "self-start justify-self-start",
+              "self-start justify-self-end",
+              "self-end justify-self-start",
+              "self-end justify-self-end",
+            ];
 
-              const position = `${positions.mobile[index]} sm:${positions.tablet[index]} lg:${positions.desktop[index]}`;
+            return (
+              <TeamMemberAvatar
+                key={member.id}
+                member={member}
+                onClick={() => setSelectedMember(member)}
+                className={positions[index]}
+              />
+            );
+          })}
 
-              return (
-                <Dialog key={member.id}>
-                  <DialogTrigger asChild>
-                    <button
-                      className={`absolute ${position} transform -translate-x-1/2 -translate-y-1/2 z-10`}
-                      onClick={() => setSelectedMember(member)}
-                    >
-                      <GlassCard className="p-2 hover:scale-110 transition-transform duration-300">
-                        <Avatar className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20">
-                          <AvatarImage src={member.avatar} alt={member.name} />
-                          <AvatarFallback>{member.initials}</AvatarFallback>
-                        </Avatar>
-                      </GlassCard>
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] w-[95vw] sm:w-full">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-4">
-                        <Avatar className="w-12 h-12 sm:w-16 sm:h-16">
-                          <AvatarImage src={member.avatar} alt={member.name} />
-                          <AvatarFallback>{member.initials}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="text-lg font-semibold">{member.name}</h3>
-                          <p className="text-sm text-muted-foreground">{member.position}</p>
-                        </div>
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="mt-4">
-                      <h4 className="font-medium mb-2">Skills & Expertise:</h4>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {member.skills.map((skill) => (
-                          <span
-                            key={skill}
-                            className="px-2 py-1 rounded-full bg-purple-500/10 text-purple-500 text-xs sm:text-sm"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                      <Button
-                        className="w-full gap-2"
-                        onClick={() => handleDelegate(member.id)}
-                      >
-                        <Send className="w-4 h-4" />
-                        Delegate Task
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              );
-            })}
-
-            {/* Central Hub - Responsive sizing */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-              <GlassCard className="p-2 sm:p-3 rounded-full bg-cora-purple/20">
-                <Users className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-cora-purple" />
-              </GlassCard>
-            </div>
+          {/* Central Hub */}
+          <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
+            <GlassCard className="rounded-full bg-cora-purple/20 p-2 sm:p-3">
+              <Users className="h-6 w-6 text-cora-purple sm:h-8 sm:w-8 lg:h-10 lg:w-10" />
+            </GlassCard>
           </div>
         </div>
       </div>
+
+      <TeamMemberDialog
+        member={selectedMember}
+        isOpen={!!selectedMember}
+        onClose={() => setSelectedMember(null)}
+        onDelegate={handleDelegate}
+      />
     </div>
   );
 }
