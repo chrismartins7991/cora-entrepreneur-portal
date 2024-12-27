@@ -78,94 +78,137 @@ export default function Delegate() {
       </div>
 
       {/* Team Web Layout */}
-      <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px] flex items-center justify-center">
+      <div className="relative w-full h-[calc(100vh-12rem)] min-h-[400px] max-h-[800px] flex items-center justify-center">
         <div className="absolute w-full h-full flex items-center justify-center">
           {/* Connection Lines - Responsive scaling */}
-          <svg className="absolute w-full h-full" style={{ zIndex: 0 }}>
+          <svg className="absolute w-full h-full max-w-[800px]" style={{ zIndex: 0 }}>
             {!isMobile && (
               <>
-                <line x1="50%" y1="50%" x2="30%" y2="30%" stroke="rgba(139, 92, 246, 0.2)" strokeWidth="2" />
-                <line x1="50%" y1="50%" x2="70%" y2="30%" stroke="rgba(139, 92, 246, 0.2)" strokeWidth="2" />
-                <line x1="50%" y1="50%" x2="30%" y2="70%" stroke="rgba(139, 92, 246, 0.2)" strokeWidth="2" />
-                <line x1="50%" y1="50%" x2="70%" y2="70%" stroke="rgba(139, 92, 246, 0.2)" strokeWidth="2" />
+                <line 
+                  x1="50%" 
+                  y1="50%" 
+                  x2="25%" 
+                  y2="25%" 
+                  stroke="rgba(139, 92, 246, 0.2)" 
+                  strokeWidth="2" 
+                  className="transition-all duration-300"
+                />
+                <line 
+                  x1="50%" 
+                  y1="50%" 
+                  x2="75%" 
+                  y2="25%" 
+                  stroke="rgba(139, 92, 246, 0.2)" 
+                  strokeWidth="2"
+                  className="transition-all duration-300"
+                />
+                <line 
+                  x1="50%" 
+                  y1="50%" 
+                  x2="25%" 
+                  y2="75%" 
+                  stroke="rgba(139, 92, 246, 0.2)" 
+                  strokeWidth="2"
+                  className="transition-all duration-300"
+                />
+                <line 
+                  x1="50%" 
+                  y1="50%" 
+                  x2="75%" 
+                  y2="75%" 
+                  stroke="rgba(139, 92, 246, 0.2)" 
+                  strokeWidth="2"
+                  className="transition-all duration-300"
+                />
               </>
             )}
           </svg>
 
           {/* Team Members - Responsive positioning */}
-          {teamMembers.map((member, index) => {
-            const position = isMobile
-              ? {
-                  0: 'top-[20%] left-[25%]',
-                  1: 'top-[20%] right-[25%]',
-                  2: 'bottom-[20%] left-[25%]',
-                  3: 'bottom-[20%] right-[25%]',
-                }[index]
-              : {
-                  0: 'top-[30%] left-[30%]',
-                  1: 'top-[30%] right-[30%]',
-                  2: 'bottom-[30%] left-[30%]',
-                  3: 'bottom-[30%] right-[30%]',
-                }[index];
+          <div className="relative w-full h-full max-w-[800px]">
+            {teamMembers.map((member, index) => {
+              const positions = {
+                mobile: [
+                  'top-[15%] left-[25%]',
+                  'top-[15%] right-[25%]',
+                  'bottom-[15%] left-[25%]',
+                  'bottom-[15%] right-[25%]',
+                ],
+                tablet: [
+                  'top-[20%] left-[25%]',
+                  'top-[20%] right-[25%]',
+                  'bottom-[20%] left-[25%]',
+                  'bottom-[20%] right-[25%]',
+                ],
+                desktop: [
+                  'top-[25%] left-[25%]',
+                  'top-[25%] right-[25%]',
+                  'bottom-[25%] left-[25%]',
+                  'bottom-[25%] right-[25%]',
+                ],
+              };
 
-            return (
-              <Dialog key={member.id}>
-                <DialogTrigger asChild>
-                  <button
-                    className={`absolute ${position} transform -translate-x-1/2 -translate-y-1/2 z-10`}
-                    onClick={() => setSelectedMember(member)}
-                  >
-                    <GlassCard className="p-2 hover:scale-110 transition-transform">
-                      <Avatar className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20">
-                        <AvatarImage src={member.avatar} alt={member.name} />
-                        <AvatarFallback>{member.initials}</AvatarFallback>
-                      </Avatar>
-                    </GlassCard>
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center gap-4">
-                      <Avatar className="w-12 h-12 md:w-16 md:h-16">
-                        <AvatarImage src={member.avatar} alt={member.name} />
-                        <AvatarFallback>{member.initials}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="text-lg font-semibold">{member.name}</h3>
-                        <p className="text-sm text-muted-foreground">{member.position}</p>
-                      </div>
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="mt-4">
-                    <h4 className="font-medium mb-2">Skills & Expertise:</h4>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {member.skills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="px-2 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                    <Button
-                      className="w-full gap-2"
-                      onClick={() => handleDelegate(member.id)}
+              const position = `${positions.mobile[index]} sm:${positions.tablet[index]} lg:${positions.desktop[index]}`;
+
+              return (
+                <Dialog key={member.id}>
+                  <DialogTrigger asChild>
+                    <button
+                      className={`absolute ${position} transform -translate-x-1/2 -translate-y-1/2 z-10`}
+                      onClick={() => setSelectedMember(member)}
                     >
-                      <Send className="w-4 h-4" />
-                      Delegate Task
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            );
-          })}
+                      <GlassCard className="p-2 hover:scale-110 transition-transform duration-300">
+                        <Avatar className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20">
+                          <AvatarImage src={member.avatar} alt={member.name} />
+                          <AvatarFallback>{member.initials}</AvatarFallback>
+                        </Avatar>
+                      </GlassCard>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] w-[95vw] sm:w-full">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-4">
+                        <Avatar className="w-12 h-12 sm:w-16 sm:h-16">
+                          <AvatarImage src={member.avatar} alt={member.name} />
+                          <AvatarFallback>{member.initials}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="text-lg font-semibold">{member.name}</h3>
+                          <p className="text-sm text-muted-foreground">{member.position}</p>
+                        </div>
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="mt-4">
+                      <h4 className="font-medium mb-2">Skills & Expertise:</h4>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {member.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="px-2 py-1 rounded-full bg-purple-500/10 text-purple-500 text-xs sm:text-sm"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                      <Button
+                        className="w-full gap-2"
+                        onClick={() => handleDelegate(member.id)}
+                      >
+                        <Send className="w-4 h-4" />
+                        Delegate Task
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              );
+            })}
 
-          {/* Central Hub - Responsive sizing */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-            <GlassCard className="p-2 md:p-3 rounded-full bg-cora-purple/20">
-              <Users className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-cora-purple" />
-            </GlassCard>
+            {/* Central Hub - Responsive sizing */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+              <GlassCard className="p-2 sm:p-3 rounded-full bg-cora-purple/20">
+                <Users className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-cora-purple" />
+              </GlassCard>
+            </div>
           </div>
         </div>
       </div>
