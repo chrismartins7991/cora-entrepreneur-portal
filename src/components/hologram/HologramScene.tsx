@@ -15,7 +15,7 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      60,
+      50, // Reduced FOV for better perspective
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
@@ -35,11 +35,11 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.minDistance = 2;
-    controls.maxDistance = 4;
-    controls.minPolarAngle = Math.PI / 3; // Limit vertical rotation
+    controls.minDistance = 3;
+    controls.maxDistance = 5;
+    controls.minPolarAngle = Math.PI / 3;
     controls.maxPolarAngle = Math.PI / 1.5;
-    controls.enablePan = false; // Disable panning
+    controls.enablePan = false;
 
     // Lighting setup
     const ambientLight = new THREE.AmbientLight(0x404040, 2);
@@ -69,9 +69,9 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
         });
 
         // Adjust model scale and position
-        model.scale.set(1.2, 1.2, 1.2);
-        model.position.y = -1; // Move model down slightly
-        model.rotation.y = Math.PI; // Rotate to face forward
+        model.scale.set(1.5, 1.5, 1.5); // Increased scale
+        model.position.set(0, -1.5, 0); // Lowered position
+        model.rotation.y = 0; // Face forward (towards camera)
 
         scene.add(model);
 
@@ -100,8 +100,8 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
         };
 
         // Set initial camera position
-        camera.position.set(0, 0.5, 3);
-        camera.lookAt(0, 0, 0);
+        camera.position.set(0, 0, 4); // Moved camera back
+        camera.lookAt(0, -0.5, 0); // Look at the center of the model
 
         animate();
       },
