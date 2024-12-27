@@ -18,6 +18,7 @@ export default function Login() {
       if (session) {
         console.log("Login: User is authenticated, redirecting to home");
         navigate("/");
+        toast.success("Successfully logged in!");
       }
     });
 
@@ -64,6 +65,18 @@ export default function Login() {
                 sign_in: {
                   email_label: 'Email',
                   password_label: 'Password',
+                  button_label: 'Sign In',
+                  loading_button_label: 'Signing in...',
+                  email_input_placeholder: 'Your email address',
+                  password_input_placeholder: 'Your password',
+                },
+                sign_up: {
+                  email_label: 'Email',
+                  password_label: 'Create a Password',
+                  button_label: 'Sign Up',
+                  loading_button_label: 'Signing up...',
+                  email_input_placeholder: 'Your email address',
+                  password_input_placeholder: 'Create a password',
                 },
               },
             }}
