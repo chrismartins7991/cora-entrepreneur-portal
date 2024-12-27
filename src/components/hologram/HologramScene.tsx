@@ -15,7 +15,7 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      75,
+      60,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
@@ -24,17 +24,22 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     const renderer = new THREE.WebGLRenderer({ 
       alpha: true, 
       antialias: true,
-      logarithmicDepthBuffer: true // Helps with model rendering
+      logarithmicDepthBuffer: true
     });
     
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Add controls
+    // Add controls with limitations
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+    controls.minDistance = 2;
+    controls.maxDistance = 4;
+    controls.minPolarAngle = Math.PI / 3; // Limit vertical rotation
+    controls.maxPolarAngle = Math.PI / 1.5;
+    controls.enablePan = false; // Disable panning
 
     // Lighting setup
     const ambientLight = new THREE.AmbientLight(0x404040, 2);
@@ -52,25 +57,24 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     console.log('Starting to load model...');
     
     loader.load(
-      '/Human-Body.glb', // Updated path to match the file in public directory
+      '/Human-Body.glb',
       (gltf) => {
         console.log('Model loaded successfully');
         const model = gltf.scene;
         
-        // Apply hologram material to all meshes
         model.traverse((node) => {
           if (node instanceof THREE.Mesh) {
             node.material = hologramMaterial;
           }
         });
 
-        // Scale and position the model
-        model.scale.set(1, 1, 1);
-        model.position.y = 0;
+        // Adjust model scale and position
+        model.scale.set(1.2, 1.2, 1.2);
+        model.position.y = -1; // Move model down slightly
+        model.rotation.y = Math.PI; // Rotate to face forward
 
         scene.add(model);
 
-        // Setup animation if the model has it
         const mixer = new THREE.AnimationMixer(model);
         if (gltf.animations.length) {
           console.log('Playing model animations');
@@ -78,20 +82,14 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
           idleAnimation.play();
         }
 
-        // Update animation loop
         const clock = new THREE.Clock();
         
         const animate = () => {
           requestAnimationFrame(animate);
           const delta = clock.getDelta();
-
-          // Update animation mixer
           mixer.update(delta);
-
-          // Update controls
           controls.update();
 
-          // Update shader uniforms
           scene.traverse((object) => {
             if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
               object.material.uniforms.time.value = clock.getElapsedTime();
@@ -101,9 +99,9 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
           renderer.render(scene, camera);
         };
 
-        // Position camera
-        camera.position.set(0, 1.6, 3);
-        camera.lookAt(0, 1, 0);
+        // Set initial camera position
+        camera.position.set(0, 0.5, 3);
+        camera.lookAt(0, 0, 0);
 
         animate();
       },
@@ -126,7 +124,6 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
 
     window.addEventListener('resize', handleResize);
 
-    // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
       if (containerRef.current) {
