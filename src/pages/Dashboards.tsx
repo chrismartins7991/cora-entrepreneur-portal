@@ -73,15 +73,37 @@ export default function Dashboards() {
             <div className="space-y-2">
               <div className="text-4xl font-bold text-white">$45,231.89</div>
               <p className="text-sm text-green-400">+20.1% from last month</p>
-              <div className="h-[200px] mt-6">
+              <div className="h-[300px] mt-6">
                 <ChartContainer config={chartConfig}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={financialChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <BarChart 
+                      data={financialChartData} 
+                      margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                      <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <XAxis 
+                        dataKey="name" 
+                        stroke="#888888" 
+                        fontSize={12} 
+                        tickLine={false} 
+                        axisLine={false}
+                        padding={{ left: 10, right: 10 }}
+                      />
+                      <YAxis 
+                        stroke="#888888" 
+                        fontSize={12} 
+                        tickLine={false} 
+                        axisLine={false}
+                        domain={[0, 'auto']}
+                        padding={{ top: 20, bottom: 20 }}
+                      />
                       <ChartTooltip />
-                      <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                      <Bar 
+                        dataKey="value" 
+                        fill="#8B5CF6" 
+                        radius={[4, 4, 0, 0]} 
+                        maxBarSize={60}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -99,13 +121,30 @@ export default function Dashboards() {
             <div className="space-y-2">
               <div className="text-4xl font-bold text-white">82%</div>
               <p className="text-sm text-green-400">+12% from last week</p>
-              <div className="h-[200px] mt-6">
+              <div className="h-[300px] mt-6">
                 <ChartContainer config={chartConfig}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={projectChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <LineChart 
+                      data={projectChartData} 
+                      margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                      <XAxis dataKey="day" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <XAxis 
+                        dataKey="day" 
+                        stroke="#888888" 
+                        fontSize={12} 
+                        tickLine={false} 
+                        axisLine={false}
+                        padding={{ left: 10, right: 10 }}
+                      />
+                      <YAxis 
+                        stroke="#888888" 
+                        fontSize={12} 
+                        tickLine={false} 
+                        axisLine={false}
+                        domain={[0, 'auto']}
+                        padding={{ top: 20, bottom: 20 }}
+                      />
                       <ChartTooltip />
                       <Line 
                         type="monotone" 
@@ -131,13 +170,30 @@ export default function Dashboards() {
             <div className="space-y-2">
               <div className="text-4xl font-bold text-white">2,350</div>
               <p className="text-sm text-green-400">+18% new users</p>
-              <div className="h-[200px] mt-6">
+              <div className="h-[300px] mt-6">
                 <ChartContainer config={chartConfig}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={customerChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <LineChart 
+                      data={customerChartData} 
+                      margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                      <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <XAxis 
+                        dataKey="month" 
+                        stroke="#888888" 
+                        fontSize={12} 
+                        tickLine={false} 
+                        axisLine={false}
+                        padding={{ left: 10, right: 10 }}
+                      />
+                      <YAxis 
+                        stroke="#888888" 
+                        fontSize={12} 
+                        tickLine={false} 
+                        axisLine={false}
+                        domain={[0, 'auto']}
+                        padding={{ top: 20, bottom: 20 }}
+                      />
                       <ChartTooltip />
                       <Line 
                         type="monotone" 
