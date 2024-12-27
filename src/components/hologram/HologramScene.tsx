@@ -52,7 +52,7 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     console.log('Starting to load model...');
     
     loader.load(
-      '/models/human.glb', // Make sure to place your model in the public/models directory
+      '/Human-Body.glb', // Updated path to match the file in public directory
       (gltf) => {
         console.log('Model loaded successfully');
         const model = gltf.scene;
