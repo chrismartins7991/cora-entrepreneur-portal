@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { createHologramShader, createRingShader } from './HologramShader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 interface HologramSceneProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -24,9 +23,38 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Create materials
-    const hologramShader = createHologramShader();
-    const ringShader = createRingShader();
+    // Create hologram material
+    const hologramMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        glowColor: { value: new THREE.Color(0x00ffff) },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying float vPosY;
+        void main() {
+          vUv = uv;
+          vPosY = position.y;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform vec3 glowColor;
+        varying vec2 vUv;
+        varying float vPosY;
+        
+        void main() {
+          float scanLine = smoothstep(0.0, 0.1, fract(vPosY * 10.0 - time));
+          float glow = 0.6 + 0.4 * sin(time + vUv.y * 20.0);
+          vec3 color = glowColor * glow;
+          float alpha = 0.6 * glow + 0.3 * scanLine;
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
 
     // Load human model
     const loader = new GLTFLoader();
@@ -36,7 +64,7 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
         const human = gltf.scene;
         human.traverse((child) => {
           if (child instanceof THREE.Mesh) {
-            child.material = hologramShader;
+            child.material = hologramMaterial;
           }
         });
         human.scale.set(1.5, 1.5, 1.5);
@@ -53,40 +81,28 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
       }
     );
 
-    // Create rings
-    const ringGeometry = new THREE.TorusGeometry(1, 0.02, 16, 100);
-    const ring1 = new THREE.Mesh(ringGeometry, ringShader);
-    ring1.rotation.x = Math.PI / 2;
-    scene.add(ring1);
-
-    const ring2 = ring1.clone();
-    ring2.scale.set(1.5, 1.5, 1.5);
-    scene.add(ring2);
-
     // Add lights
-    const ambientLight = new THREE.AmbientLight(0x404040);
+    const ambientLight = new THREE.AmbientLight(0x404040, 1);
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0x8CECFE, 1);
-    directionalLight.position.set(1, 1, 1);
+    directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
     // Position camera
-    camera.position.z = 5;
+    camera.position.set(0, 1.5, 3);
 
     // Animation loop
     const clock = new THREE.Clock();
     const animate = () => {
       requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
-      
-      // Update shader uniforms
-      hologramShader.uniforms.time.value = time;
-      ringShader.uniforms.time.value = time;
+      const elapsed = clock.getElapsedTime();
 
-      // Rotate rings
-      ring1.rotation.z += 0.01;
-      ring2.rotation.z -= 0.01;
+      scene.traverse((object) => {
+        if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
+          object.material.uniforms.time.value = elapsed;
+        }
+      });
 
       renderer.render(scene, camera);
     };
@@ -96,7 +112,6 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     // Handle window resize
     const handleResize = () => {
       if (!containerRef.current) return;
-      
       camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
