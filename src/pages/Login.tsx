@@ -59,9 +59,13 @@ export default function Login() {
             }}
             theme="dark"
             providers={[]}
-            onError={(error) => {
-              console.error("Login: Authentication error", error);
-              toast.error(error.message);
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: 'Email',
+                  password_label: 'Password',
+                },
+              },
             }}
           />
         </div>
