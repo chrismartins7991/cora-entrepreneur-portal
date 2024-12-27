@@ -29,11 +29,11 @@ const customerChartData = [
 
 export default function Dashboards() {
   return (
-    <div className="min-h-screen bg-black p-4">
-      <h1 className="text-2xl font-bold text-white mb-4">Dashboards</h1>
+    <div className="min-h-screen bg-black px-4 py-6 sm:p-8">
+      <h1 className="text-xl sm:text-2xl font-bold text-white mb-4">Dashboards</h1>
       
       <Select defaultValue="month">
-        <SelectTrigger className="w-[180px] mb-4">
+        <SelectTrigger className="w-full sm:w-[180px] mb-4">
           <SelectValue placeholder="Select view period" />
         </SelectTrigger>
         <SelectContent>
@@ -44,15 +44,15 @@ export default function Dashboards() {
         </SelectContent>
       </Select>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <GlassCard>
-          <h2 className="mb-2 text-white">Financial Overview</h2>
-          <div className="h-[300px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <GlassCard className="p-4 sm:p-6">
+          <h2 className="mb-2 text-sm sm:text-base text-white">Financial Overview</h2>
+          <div className="h-[250px] sm:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={financialChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="name" stroke="#fff" />
-                <YAxis stroke="#fff" />
+                <XAxis dataKey="name" stroke="#fff" fontSize={12} />
+                <YAxis stroke="#fff" fontSize={12} />
                 <Tooltip />
                 <Bar dataKey="value" fill="#8884d8" />
               </BarChart>
@@ -60,14 +60,14 @@ export default function Dashboards() {
           </div>
         </GlassCard>
 
-        <GlassCard>
-          <h2 className="mb-2 text-white">Project Tasks</h2>
-          <div className="h-[300px]">
+        <GlassCard className="p-4 sm:p-6">
+          <h2 className="mb-2 text-sm sm:text-base text-white">Project Tasks</h2>
+          <div className="h-[250px] sm:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={projectChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="day" stroke="#fff" />
-                <YAxis stroke="#fff" />
+                <XAxis dataKey="day" stroke="#fff" fontSize={12} />
+                <YAxis stroke="#fff" fontSize={12} />
                 <Tooltip />
                 <Line type="monotone" dataKey="tasks" stroke="#8884d8" />
               </LineChart>
@@ -75,14 +75,14 @@ export default function Dashboards() {
           </div>
         </GlassCard>
 
-        <GlassCard>
-          <h2 className="mb-2 text-white">Customer Acquisition</h2>
-          <div className="h-[300px]">
+        <GlassCard className="p-4 sm:p-6">
+          <h2 className="mb-2 text-sm sm:text-base text-white">Customer Acquisition</h2>
+          <div className="h-[250px] sm:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={customerChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="month" stroke="#fff" />
-                <YAxis stroke="#fff" />
+                <XAxis dataKey="month" stroke="#fff" fontSize={12} />
+                <YAxis stroke="#fff" fontSize={12} />
                 <Tooltip />
                 <Bar dataKey="customers" fill="#82ca9d" />
               </BarChart>
@@ -90,14 +90,14 @@ export default function Dashboards() {
           </div>
         </GlassCard>
 
-        <GlassCard>
-          <h2 className="mb-2 text-white">Overall Performance</h2>
-          <div className="h-[300px]">
+        <GlassCard className="p-4 sm:p-6">
+          <h2 className="mb-2 text-sm sm:text-base text-white">Overall Performance</h2>
+          <div className="h-[250px] sm:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={financialChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="name" stroke="#fff" />
-                <YAxis stroke="#fff" />
+                <XAxis dataKey="name" stroke="#fff" fontSize={12} />
+                <YAxis stroke="#fff" fontSize={12} />
                 <Tooltip />
                 <Line type="monotone" dataKey="value" stroke="#82ca9d" />
               </LineChart>

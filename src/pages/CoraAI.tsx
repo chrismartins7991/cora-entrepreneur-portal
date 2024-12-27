@@ -26,25 +26,25 @@ export default function CoraAI() {
   };
 
   return (
-    <div className="min-h-screen bg-black p-8">
-      <div className="flex justify-between mb-4">
-        <Button variant="outline">New Chat</Button>
-        <Button variant="outline">Sort by Date</Button>
+    <div className="min-h-screen bg-black px-4 py-6 sm:p-8">
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">New Chat</Button>
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">Sort by Date</Button>
       </div>
 
-      <div className="text-center my-8 space-y-4">
-        <h1 className="text-5xl font-bold text-white">
+      <div className="text-center my-4 sm:my-8 space-y-4">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white px-4">
           I'm available 24/7 to assist you and make your Business succeed
         </h1>
-        <p className="text-xl text-white/80">
+        <p className="text-lg sm:text-xl text-white/80">
           with you for a successful entrepreneurial journey
         </p>
 
-        <div className="max-w-2xl mx-auto mt-8">
+        <div className="max-w-2xl mx-auto mt-8 px-4">
           <div className="relative">
             <Input
               placeholder="I'm looking for..."
-              className="pl-10"
+              className="pl-4 sm:pl-10"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
@@ -52,14 +52,14 @@ export default function CoraAI() {
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 px-4">
           <p className="text-white mb-4">You may ask:</p>
           <div className="flex flex-wrap gap-2 justify-center">
             {suggestions.map((text, index) => (
               <Button
                 key={index}
                 variant="outline"
-                className="text-sm"
+                className="text-xs sm:text-sm"
                 onClick={() => setInputMessage(text)}
               >
                 {text}
@@ -69,15 +69,15 @@ export default function CoraAI() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto mt-8">
+      <div className="max-w-2xl mx-auto mt-8 px-4">
         {messages.map((msg, index) => (
           <GlassCard
             key={index}
-            className={`mb-4 ${msg.sender === "User" ? "ml-auto" : "mr-auto"} max-w-[80%]`}
+            className={`mb-4 ${msg.sender === "User" ? "ml-auto" : "mr-auto"} max-w-[90%] sm:max-w-[80%]`}
           >
             <div className="flex flex-col">
-              <span className="font-bold">{msg.sender}</span>
-              <span>{msg.message}</span>
+              <span className="font-bold text-sm sm:text-base">{msg.sender}</span>
+              <span className="text-sm sm:text-base">{msg.message}</span>
             </div>
           </GlassCard>
         ))}
