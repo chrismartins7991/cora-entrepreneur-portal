@@ -58,23 +58,29 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
 
     // Load human model
     const loader = new GLTFLoader();
+    console.log('Starting to load human model...');
+    
     loader.load(
       '/models/human.glb',
       (gltf) => {
+        console.log('Human model loaded successfully');
         const human = gltf.scene;
+        
+        // Apply material to all meshes
         human.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.material = hologramMaterial;
           }
         });
-        human.scale.set(1.5, 1.5, 1.5);
-        human.position.y = -0.5;
-        scene.add(human);
 
-        console.log('Human model loaded successfully');
+        // Position and scale the model
+        human.scale.set(2, 2, 2);
+        human.position.set(0, -1, 0);
+        human.rotation.y = Math.PI; // Make the model face the camera
+        scene.add(human);
       },
       (progress) => {
-        console.log('Loading progress:', (progress.loaded / progress.total) * 100, '%');
+        console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
       },
       (error) => {
         console.error('Error loading human model:', error);
@@ -82,15 +88,16 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     );
 
     // Add lights
-    const ambientLight = new THREE.AmbientLight(0x404040, 1);
+    const ambientLight = new THREE.AmbientLight(0x404040, 2);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0x8CECFE, 1);
+    const directionalLight = new THREE.DirectionalLight(0x8CECFE, 2);
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
     // Position camera
-    camera.position.set(0, 1.5, 3);
+    camera.position.set(0, 1, 4);
+    camera.lookAt(0, 0, 0);
 
     // Animation loop
     const clock = new THREE.Clock();
@@ -98,6 +105,7 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
       requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
+      // Update shader uniforms
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
           object.material.uniforms.time.value = elapsed;
