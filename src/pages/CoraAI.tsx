@@ -1,83 +1,115 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 import { GlassCard } from "@/components/GlassCard";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Lock, PlayCircle, Clock, BookOpen } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
-const suggestions = [
-  "What is the alternative to take my agency to 5k/ month",
-  "I want to start automating the customer support. Automate it for me.",
-  "Get me the best 5 email marketing tools for an easy setup.",
-  "With a Budget of 500€ how can I create 5 different forms the quickest way",
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  lessons: number;
+  price: number;
+  imageUrl: string;
+}
+
+const courses: Course[] = [
+  {
+    id: "1",
+    title: "Business Model Innovation",
+    description: "Learn how to create and validate innovative business models that disrupt markets.",
+    duration: "6 hours",
+    lessons: 12,
+    price: 199,
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    id: "2",
+    title: "Growth Hacking Mastery",
+    description: "Discover proven strategies to scale your startup rapidly with minimal budget.",
+    duration: "8 hours",
+    lessons: 15,
+    price: 249,
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    id: "3",
+    title: "Startup Finance Essentials",
+    description: "Master the fundamentals of financial management for early-stage startups.",
+    duration: "5 hours",
+    lessons: 10,
+    price: 179,
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    id: "4",
+    title: "Leadership & Team Building",
+    description: "Build and lead high-performing teams in fast-paced startup environments.",
+    duration: "7 hours",
+    lessons: 14,
+    price: 229,
+    imageUrl: "/placeholder.svg"
+  }
 ];
 
 export default function CoraAI() {
-  const [messages, setMessages] = useState<Array<{ sender: string; message: string }>>([]);
-  const [inputMessage, setInputMessage] = useState("");
+  const { toast } = useToast();
 
-  const handleSendMessage = () => {
-    if (inputMessage.trim()) {
-      setMessages([...messages, { sender: "User", message: inputMessage }]);
-      // Simulate AI response
-      setTimeout(() => {
-        setMessages(prev => [...prev, { sender: "Cora", message: "I'm here to help! Let me assist you with that." }]);
-      }, 1000);
-      setInputMessage("");
-    }
+  const handlePurchase = (courseId: string) => {
+    console.log("Attempting to purchase course:", courseId);
+    toast({
+      title: "Purchase Required",
+      description: "This course is currently locked. Purchase to gain access.",
+      duration: 3000,
+    });
   };
 
   return (
-    <div className="min-h-screen bg-black px-4 py-6 sm:p-8">
-      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
-        <Button variant="outline" size="sm" className="w-full sm:w-auto">New Chat</Button>
-        <Button variant="outline" size="sm" className="w-full sm:w-auto">Sort by Date</Button>
-      </div>
+    <div className="h-full w-full overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
+      <h1>CoraAI Page</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-4 md:pb-0 h-[calc(100%-5rem)] md:h-[calc(100%-4rem)]">
+        {courses.map((course) => (
+          <GlassCard key={course.id} className="flex flex-col h-auto md:h-fit">
+            {/* Course Image */}
+            <div className="relative h-32 sm:h-40 mb-3 rounded-lg overflow-hidden">
+              <img
+                src={course.imageUrl}
+                alt={course.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <Lock className="w-6 h-6 text-white/80" />
+              </div>
+            </div>
 
-      <div className="text-center my-4 sm:my-8 space-y-4">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white px-4">
-          I'm available 24/7 to assist you and make your Business succeed
-        </h1>
-        <p className="text-lg sm:text-xl text-white/80">
-          with you for a successful entrepreneurial journey
-        </p>
+            {/* Course Info */}
+            <h3 className="text-lg md:text-xl font-semibold text-white mb-2">{course.title}</h3>
+            <p className="text-sm text-white/60 mb-3 line-clamp-2">{course.description}</p>
 
-        <div className="max-w-2xl mx-auto mt-8 px-4">
-          <div className="relative">
-            <Input
-              placeholder="I'm looking for..."
-              className="pl-4 sm:pl-10"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-            />
-          </div>
-        </div>
+            {/* Course Meta */}
+            <div className="flex items-center gap-3 mb-3 text-white/60 text-xs md:text-sm">
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                {course.duration}
+              </div>
+              <div className="flex items-center gap-1">
+                <BookOpen className="w-4 h-4" />
+                {course.lessons} lessons
+              </div>
+            </div>
 
-        <div className="mt-8 px-4">
-          <p className="text-white mb-4">You may ask:</p>
-          <div className="flex flex-wrap gap-2 justify-center">
-            {suggestions.map((text, index) => (
+            {/* Price and Action */}
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-white font-bold">${course.price}</span>
               <Button
-                key={index}
-                variant="outline"
-                className="text-xs sm:text-sm"
-                onClick={() => setInputMessage(text)}
+                onClick={() => handlePurchase(course.id)}
+                className="gap-2 text-sm"
+                size="sm"
               >
-                {text}
+                <Lock className="w-3 h-3" />
+                Unlock Course
               </Button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto mt-8 px-4">
-        {messages.map((msg, index) => (
-          <GlassCard
-            key={index}
-            className={`mb-4 ${msg.sender === "User" ? "ml-auto" : "mr-auto"} max-w-[90%] sm:max-w-[80%]`}
-          >
-            <div className="flex flex-col">
-              <span className="font-bold text-sm sm:text-base">{msg.sender}</span>
-              <span className="text-sm sm:text-base">{msg.message}</span>
             </div>
           </GlassCard>
         ))}

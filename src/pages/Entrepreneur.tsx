@@ -12,7 +12,7 @@ export default function Entrepreneur() {
   };
 
   return (
-    <div className="min-h-screen w-full relative">
+    <div className="min-h-screen w-full relative overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-white mb-8">Entrepreneur Dashboard</h1>
         

@@ -67,7 +67,7 @@ export default function Delegate() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-black p-4 lg:p-8">
+    <div className="min-h-screen w-full bg-black p-4 lg:p-8 overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
       <div className="mb-8">
         <h1 className="mb-2 flex items-center gap-2 text-2xl font-bold text-white md:text-3xl lg:text-4xl">
           <Users className="h-6 w-6 md:h-8 md:w-8" />

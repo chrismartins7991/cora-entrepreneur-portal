@@ -7,7 +7,7 @@ import { EngagementChart } from "@/components/dashboard/EngagementChart";
 
 export default function Dashboards() {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
         <h1 className="text-2xl font-bold tracking-tight text-white">Analytics Dashboard</h1>

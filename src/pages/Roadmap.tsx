@@ -43,7 +43,7 @@ export default function Roadmap() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-black p-2 sm:p-4">
+    <div className="min-h-[calc(100vh-4rem)] bg-black p-2 sm:p-4 overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
       <div className="flex flex-col h-[calc(100vh-6rem)] max-h-[calc(100vh-6rem)] overflow-hidden gap-4">
         {/* View Selection Buttons */}
         <ScrollArea className="w-full whitespace-nowrap pb-2">

@@ -19,7 +19,7 @@ const automationCategories = {
 
 export default function Automate() {
   return (
-    <div className="min-h-screen bg-black p-4">
+    <div className="min-h-screen bg-black p-4 overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-3xl font-bold text-white mb-2">Automate Your Business</h1>
         <p className="text-white/60 mb-8">

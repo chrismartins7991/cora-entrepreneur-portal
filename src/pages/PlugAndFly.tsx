@@ -7,7 +7,7 @@ export default function PlugAndFly() {
   const { toast } = useToast();
 
   return (
-    <div className="min-h-screen bg-black p-4">
+    <div className="min-h-screen bg-black p-4 overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
       <h1 className="text-2xl font-bold text-white mb-4">Plug & Fly</h1>
       
       <div className="border border-dashed border-white/20 rounded-lg p-8 mb-6 flex flex-col items-center justify-center min-h-[150px] hover:bg-white/5 transition-colors cursor-pointer">

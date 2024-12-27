@@ -65,7 +65,7 @@ export default function Brain() {
   };
 
   return (
-    <div className="h-full overflow-auto md:overflow-hidden">
+    <div className="h-full overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Entrepreneur's Brain</h1>
         <p className="text-sm md:text-base text-white/60">
