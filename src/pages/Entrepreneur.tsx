@@ -26,17 +26,82 @@ export default function Entrepreneur() {
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // Create human figure (simplified for demo)
-    const geometry = new THREE.CylinderGeometry(0.5, 0.3, 2, 32);
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x103DEF,
-      transparent: true,
-      opacity: 0.6,
-      emissive: 0x8CECFE,
-      emissiveIntensity: 0.5,
-    });
-    
-    const human = new THREE.Mesh(geometry, material);
+    // Create human body parts
+    const createHumanMesh = () => {
+      const group = new THREE.Group();
+
+      // Head
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.25, 32, 32),
+        new THREE.MeshPhongMaterial({
+          color: 0x103DEF,
+          transparent: true,
+          opacity: 0.6,
+          emissive: 0x8CECFE,
+          emissiveIntensity: 0.5,
+        })
+      );
+      head.position.y = 0.8;
+      group.add(head);
+
+      // Torso
+      const torso = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.3, 0.4, 1, 32),
+        new THREE.MeshPhongMaterial({
+          color: 0x103DEF,
+          transparent: true,
+          opacity: 0.6,
+          emissive: 0x8CECFE,
+          emissiveIntensity: 0.5,
+        })
+      );
+      torso.position.y = 0.1;
+      group.add(torso);
+
+      // Arms
+      const armGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 32);
+      const leftArm = new THREE.Mesh(
+        armGeometry,
+        new THREE.MeshPhongMaterial({
+          color: 0x103DEF,
+          transparent: true,
+          opacity: 0.6,
+          emissive: 0x8CECFE,
+          emissiveIntensity: 0.5,
+        })
+      );
+      leftArm.position.set(-0.4, 0.2, 0);
+      leftArm.rotation.z = Math.PI / 6;
+      group.add(leftArm);
+
+      const rightArm = leftArm.clone();
+      rightArm.position.set(0.4, 0.2, 0);
+      rightArm.rotation.z = -Math.PI / 6;
+      group.add(rightArm);
+
+      // Legs
+      const legGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 32);
+      const leftLeg = new THREE.Mesh(
+        legGeometry,
+        new THREE.MeshPhongMaterial({
+          color: 0x103DEF,
+          transparent: true,
+          opacity: 0.6,
+          emissive: 0x8CECFE,
+          emissiveIntensity: 0.5,
+        })
+      );
+      leftLeg.position.set(-0.2, -0.6, 0);
+      group.add(leftLeg);
+
+      const rightLeg = leftLeg.clone();
+      rightLeg.position.set(0.2, -0.6, 0);
+      group.add(rightLeg);
+
+      return group;
+    };
+
+    const human = createHumanMesh();
     scene.add(human);
 
     // Add holographic rings
