@@ -30,72 +30,54 @@ export default function Entrepreneur() {
     const createHumanMesh = () => {
       const group = new THREE.Group();
 
+      // Create a more anatomically correct human body
+      const bodyGeometry = new THREE.CapsuleGeometry(0.3, 1.2, 4, 16);
+      const bodyMaterial = new THREE.MeshPhongMaterial({
+        color: 0x103DEF,
+        transparent: true,
+        opacity: 0.6,
+        emissive: 0x8CECFE,
+        emissiveIntensity: 0.5,
+        side: THREE.DoubleSide,
+      });
+
+      // Main body
+      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+      body.position.y = 0;
+      group.add(body);
+
       // Head
-      const head = new THREE.Mesh(
-        new THREE.SphereGeometry(0.25, 32, 32),
-        new THREE.MeshPhongMaterial({
-          color: 0x103DEF,
-          transparent: true,
-          opacity: 0.6,
-          emissive: 0x8CECFE,
-          emissiveIntensity: 0.5,
-        })
-      );
-      head.position.y = 0.8;
+      const headGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+      const head = new THREE.Mesh(headGeometry, bodyMaterial);
+      head.position.y = 0.9;
       group.add(head);
 
-      // Torso
-      const torso = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.3, 0.4, 1, 32),
-        new THREE.MeshPhongMaterial({
-          color: 0x103DEF,
-          transparent: true,
-          opacity: 0.6,
-          emissive: 0x8CECFE,
-          emissiveIntensity: 0.5,
-        })
-      );
-      torso.position.y = 0.1;
-      group.add(torso);
-
       // Arms
-      const armGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 32);
-      const leftArm = new THREE.Mesh(
-        armGeometry,
-        new THREE.MeshPhongMaterial({
-          color: 0x103DEF,
-          transparent: true,
-          opacity: 0.6,
-          emissive: 0x8CECFE,
-          emissiveIntensity: 0.5,
-        })
-      );
-      leftArm.position.set(-0.4, 0.2, 0);
-      leftArm.rotation.z = Math.PI / 6;
+      const armGeometry = new THREE.CapsuleGeometry(0.08, 0.8, 4, 8);
+      
+      // Left arm
+      const leftArm = new THREE.Mesh(armGeometry, bodyMaterial);
+      leftArm.position.set(-0.4, 0.3, 0);
+      leftArm.rotation.z = Math.PI / 8;
       group.add(leftArm);
 
-      const rightArm = leftArm.clone();
-      rightArm.position.set(0.4, 0.2, 0);
-      rightArm.rotation.z = -Math.PI / 6;
+      // Right arm
+      const rightArm = new THREE.Mesh(armGeometry, bodyMaterial);
+      rightArm.position.set(0.4, 0.3, 0);
+      rightArm.rotation.z = -Math.PI / 8;
       group.add(rightArm);
 
       // Legs
-      const legGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 32);
-      const leftLeg = new THREE.Mesh(
-        legGeometry,
-        new THREE.MeshPhongMaterial({
-          color: 0x103DEF,
-          transparent: true,
-          opacity: 0.6,
-          emissive: 0x8CECFE,
-          emissiveIntensity: 0.5,
-        })
-      );
-      leftLeg.position.set(-0.2, -0.6, 0);
+      const legGeometry = new THREE.CapsuleGeometry(0.1, 0.8, 4, 8);
+      
+      // Left leg
+      const leftLeg = new THREE.Mesh(legGeometry, bodyMaterial);
+      leftLeg.position.set(-0.2, -0.8, 0);
       group.add(leftLeg);
 
-      const rightLeg = leftLeg.clone();
-      rightLeg.position.set(0.2, -0.6, 0);
+      // Right leg
+      const rightLeg = new THREE.Mesh(legGeometry, bodyMaterial);
+      rightLeg.position.set(0.2, -0.8, 0);
       group.add(rightLeg);
 
       return group;
