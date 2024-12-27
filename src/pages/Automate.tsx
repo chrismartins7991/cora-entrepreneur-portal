@@ -1,3 +1,46 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { GlassCard } from "@/components/GlassCard";
+
+// Define the automation categories data structure
+interface Automation {
+  id: string;
+  name: string;
+  description: string;
+}
+
+const automationCategories: Record<string, Automation[]> = {
+  Sales: [
+    {
+      id: "1",
+      name: "Lead Qualification",
+      description: "Automatically qualify leads based on predefined criteria",
+    },
+    {
+      id: "2",
+      name: "Follow-up Emails",
+      description: "Schedule and send automated follow-up emails to prospects",
+    },
+  ],
+  Marketing: [
+    {
+      id: "3",
+      name: "Social Media Posts",
+      description: "Schedule and automate social media content posting",
+    },
+    {
+      id: "4",
+      name: "Email Campaigns",
+      description: "Create and schedule automated email marketing campaigns",
+    },
+  ],
+};
+
 export default function Automate() {
   return (
     <div className="h-full flex flex-col">

@@ -1,3 +1,10 @@
+import { useState } from "react";
+import { MessageCircle } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { GlassCard } from "@/components/GlassCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 export default function CoraAI() {
   const [message, setMessage] = useState("");
   const { toast } = useToast();

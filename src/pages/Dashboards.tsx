@@ -1,3 +1,5 @@
+import { GlassCard } from "@/components/GlassCard";
+
 export default function Dashboards() {
   return (
     <div className="h-full flex flex-col">
