@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Outlet } from "react-router-dom";
 import { Home, MessageCircle, Map, BarChart2, Plug, Zap, Users, Brain, User, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ const navItems = [
   { icon: User, label: "Entrepreneur", href: "/entrepreneur", soon: true },
 ];
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -85,7 +85,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main className="w-full p-4 md:ml-64 md:p-8">
-        {children}
+        <Outlet />
       </main>
 
       {/* Overlay for mobile */}

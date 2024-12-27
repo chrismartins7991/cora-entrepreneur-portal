@@ -24,23 +24,33 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // Log initial check
+    console.log("ProtectedRoute: Checking authentication state...");
+
     supabase.auth.onAuthStateChange((event, session) => {
+      console.log("ProtectedRoute: Auth state changed", { event, session });
       setIsAuthenticated(!!session);
     });
 
     // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("ProtectedRoute: Initial session check", { session });
       setIsAuthenticated(!!session);
     });
   }, []);
 
   // Show nothing while checking authentication
-  if (isAuthenticated === null) return null;
+  if (isAuthenticated === null) {
+    console.log("ProtectedRoute: Still checking authentication...");
+    return null;
+  }
 
   if (!isAuthenticated) {
+    console.log("ProtectedRoute: User not authenticated, redirecting to login");
     return <Navigate to="/login" replace />;
   }
 
+  console.log("ProtectedRoute: User is authenticated, rendering protected content");
   return <>{children}</>;
 };
 
@@ -58,22 +68,20 @@ const App = () => (
             path="/"
             element={
               <ProtectedRoute>
-                <Layout>
-                  <Routes>
-                    <Route index element={<Index />} />
-                    <Route path="cora-ai" element={<CoraAI />} />
-                    <Route path="roadmap" element={<Roadmap />} />
-                    <Route path="dashboards" element={<Dashboards />} />
-                    <Route path="plug-and-fly" element={<PlugAndFly />} />
-                    <Route path="automate" element={<Automate />} />
-                    <Route path="delegate" element={<Delegate />} />
-                    <Route path="brain" element={<Brain />} />
-                    <Route path="entrepreneur" element={<Entrepreneur />} />
-                  </Routes>
-                </Layout>
+                <Layout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Index />} />
+            <Route path="cora-ai" element={<CoraAI />} />
+            <Route path="roadmap" element={<Roadmap />} />
+            <Route path="dashboards" element={<Dashboards />} />
+            <Route path="plug-and-fly" element={<PlugAndFly />} />
+            <Route path="automate" element={<Automate />} />
+            <Route path="delegate" element={<Delegate />} />
+            <Route path="brain" element={<Brain />} />
+            <Route path="entrepreneur" element={<Entrepreneur />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
