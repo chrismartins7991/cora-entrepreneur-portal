@@ -34,7 +34,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-black">
+    <div className="flex h-screen w-full overflow-hidden bg-black">
       {/* Mobile Menu Button */}
       <Button
         variant="ghost"
@@ -52,53 +52,58 @@ export default function Layout() {
       {/* Sidebar */}
       <nav
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full transform bg-black/50 p-4 backdrop-blur-lg transition-transform duration-200 ease-in-out md:translate-x-0",
+          "fixed left-0 top-0 z-40 h-full w-64 -translate-x-full transform bg-black/50 backdrop-blur-lg transition-transform duration-200 ease-in-out md:translate-x-0",
           isSidebarOpen && "translate-x-0"
         )}
       >
-        <div className="mb-8 mt-16 text-2xl font-bold text-white md:mt-0">CORA</div>
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.href || 
-                         (item.href === "/" && location.pathname === "/") ||
-                         (item.href !== "/" && location.pathname.startsWith(item.href));
-          
-          return (
-            <Link
-              key={item.label}
-              to={item.href}
-              onClick={() => setIsSidebarOpen(false)}
-              className={cn(
-                "group mb-2 flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10",
-                isActive && "bg-white/20 font-medium"
-              )}
-            >
-              <item.icon className={cn(
-                "h-5 w-5",
-                isActive && "text-purple-400"
-              )} />
-              <span>{item.label}</span>
-              {item.soon && (
-                <span className="ml-auto rounded bg-yellow-500/20 px-2 py-0.5 text-xs text-yellow-500">
-                  Soon
-                </span>
-              )}
-            </Link>
-          );
-        })}
-
-        {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          className="absolute bottom-8 left-4 flex items-center gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10"
-        >
-          <LogOut className="h-5 w-5" />
-          <span>Logout</span>
-        </button>
+        <div className="flex h-full flex-col p-4">
+          <div className="mb-8 mt-16 text-2xl font-bold text-white md:mt-0">CORA</div>
+          <div className="flex-1 overflow-y-auto">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.href || 
+                           (item.href === "/" && location.pathname === "/") ||
+                           (item.href !== "/" && location.pathname.startsWith(item.href));
+              
+              return (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={cn(
+                    "group mb-2 flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10",
+                    isActive && "bg-white/20 font-medium"
+                  )}
+                >
+                  <item.icon className={cn(
+                    "h-5 w-5",
+                    isActive && "text-purple-400"
+                  )} />
+                  <span>{item.label}</span>
+                  {item.soon && (
+                    <span className="ml-auto rounded bg-yellow-500/20 px-2 py-0.5 text-xs text-yellow-500">
+                      Soon
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Logout</span>
+          </button>
+        </div>
       </nav>
 
       {/* Main content */}
-      <main className="w-full p-4 md:ml-64 md:p-8">
-        <Outlet />
+      <main className="h-screen w-full overflow-hidden md:ml-64">
+        <div className="h-full overflow-hidden p-4 md:p-8">
+          <Outlet />
+        </div>
       </main>
 
       {/* Overlay for mobile */}
