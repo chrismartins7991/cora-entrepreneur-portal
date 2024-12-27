@@ -7,8 +7,8 @@ import { EngagementChart } from "@/components/dashboard/EngagementChart";
 
 export default function Dashboards() {
   return (
-    <div className="h-[calc(100vh-2rem)] w-full">
-      <div className="flex flex-col h-full gap-4">
+    <div className="h-screen w-full overflow-hidden">
+      <div className="flex flex-col h-full gap-4 max-h-screen">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold tracking-tight text-white">Analytics Dashboard</h1>
@@ -26,7 +26,7 @@ export default function Dashboards() {
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 overflow-hidden">
           <RevenueChart />
           <TaskCompletionChart />
           <ActiveUsersChart />
