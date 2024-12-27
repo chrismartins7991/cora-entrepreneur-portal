@@ -2,6 +2,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { TaskCompletionChart } from "@/components/dashboard/TaskCompletionChart";
 import { ActiveUsersChart } from "@/components/dashboard/ActiveUsersChart";
+import { ConversionRateChart } from "@/components/dashboard/ConversionRateChart";
+import { EngagementChart } from "@/components/dashboard/EngagementChart";
 
 export default function Dashboards() {
   return (
@@ -28,6 +30,8 @@ export default function Dashboards() {
           <RevenueChart />
           <TaskCompletionChart />
           <ActiveUsersChart />
+          <ConversionRateChart />
+          <EngagementChart />
         </div>
       </div>
     </div>
