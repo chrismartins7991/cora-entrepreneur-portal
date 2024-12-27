@@ -44,11 +44,11 @@ const chartConfig = {
 
 export default function Dashboards() {
   return (
-    <div className="min-h-screen w-full space-y-6 p-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-2xl font-bold text-white">Analytics Dashboard</h1>
+    <div className="min-h-screen w-full p-4 md:p-6 lg:p-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-white">Analytics Dashboard</h1>
         <Select defaultValue="month">
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[140px] sm:w-[180px]">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
@@ -60,15 +60,96 @@ export default function Dashboards() {
         </Select>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card className="bg-black/40 backdrop-blur">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base font-medium">Revenue</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className="text-2xl font-bold">$45,231.89</div>
+              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+              <div className="h-[180px] sm:h-[200px] mt-4">
+                <ChartContainer config={chartConfig}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={financialChartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                      <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <ChartTooltip />
+                      <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-black/40 backdrop-blur">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base font-medium">Task Completion</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className="text-2xl font-bold">82%</div>
+              <p className="text-xs text-muted-foreground">+12% from last week</p>
+              <div className="h-[180px] sm:h-[200px] mt-4">
+                <ChartContainer config={chartConfig}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={projectChartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                      <XAxis dataKey="day" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <ChartTooltip />
+                      <Line 
+                        type="monotone" 
+                        dataKey="tasks" 
+                        stroke="#20B2AA" 
+                        strokeWidth={2}
+                        dot={{ fill: "#20B2AA" }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-black/40 backdrop-blur sm:col-span-2 lg:col-span-1">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base font-medium">Active Users</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className="text-2xl font-bold">2,350</div>
+              <p className="text-xs text-muted-foreground">+18% new users</p>
+              <div className="h-[180px] sm:h-[200px] mt-4">
+                <ChartContainer config={chartConfig}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={customerChartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                      <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <ChartTooltip />
+                      <Line 
+                        type="monotone" 
+                        dataKey="customers" 
+                        stroke="#103DEF" 
+                        strokeWidth={2}
+                        dot={{ fill: "#103DEF" }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card className="bg-black/40 backdrop-blur">
-          <CardHeader>
-            <CardTitle className="text-base font-medium">Revenue</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-base font-medium">Overview</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
-            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-            <div className="h-[200px] mt-4">
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="h-[250px] sm:h-[300px] lg:h-[350px]">
               <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={financialChartData}>
@@ -83,86 +164,7 @@ export default function Dashboards() {
             </div>
           </CardContent>
         </Card>
-
-        <Card className="bg-black/40 backdrop-blur">
-          <CardHeader>
-            <CardTitle className="text-base font-medium">Task Completion</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">82%</div>
-            <p className="text-xs text-muted-foreground">+12% from last week</p>
-            <div className="h-[200px] mt-4">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={projectChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="day" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <ChartTooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="tasks" 
-                      stroke="#20B2AA" 
-                      strokeWidth={2}
-                      dot={{ fill: "#20B2AA" }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-black/40 backdrop-blur">
-          <CardHeader>
-            <CardTitle className="text-base font-medium">Active Users</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">2,350</div>
-            <p className="text-xs text-muted-foreground">+18% new users</p>
-            <div className="h-[200px] mt-4">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={customerChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <ChartTooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="customers" 
-                      stroke="#103DEF" 
-                      strokeWidth={2}
-                      dot={{ fill: "#103DEF" }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          </CardContent>
-        </Card>
       </div>
-
-      <Card className="bg-black/40 backdrop-blur">
-        <CardHeader>
-          <CardTitle className="text-base font-medium">Overview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ChartContainer config={chartConfig}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={financialChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                  <ChartTooltip />
-                  <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
