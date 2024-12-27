@@ -70,8 +70,8 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
 
         // Adjust model scale and position
         model.scale.set(1.2, 1.2, 1.2);
-        model.position.set(0, -2, 0); // Moved down to show full body
-        model.rotation.y = Math.PI; // Rotate 180 degrees to face the camera
+        model.position.set(0, -2, 0);
+        model.rotation.y = 0; // Changed to 0 to face the camera (model's default forward direction)
 
         scene.add(model);
 
