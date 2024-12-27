@@ -20,7 +20,7 @@ const monthlyData = [
 
 export default function Index() {
   return (
-    <div className="min-h-screen w-full px-4 py-6 sm:p-8">
+    <div className="min-h-screen w-full px-4 py-6 sm:p-8 overflow-auto md:overflow-hidden">
       <div className="mb-6 sm:mb-8 text-center">
         <h1 className="mb-2 text-xl sm:text-2xl md:text-3xl font-bold text-white">Good Afternoon, Christian</h1>
         <p className="text-xs sm:text-sm md:text-base text-white/80">
@@ -28,7 +28,7 @@ export default function Index() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-20 md:pb-4">
         {/* Finances */}
         <GlassCard className="p-4 sm:p-6">
           <h3 className="mb-2 font-semibold text-white text-sm sm:text-base">Finances</h3>
