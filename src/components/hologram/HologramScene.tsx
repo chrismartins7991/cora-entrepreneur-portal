@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createHologramShader, createRingShader } from './HologramShader';
@@ -11,13 +11,20 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // Scene setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, containerRef.current.clientWidth / containerRef.current.clientHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      containerRef.current.clientWidth / containerRef.current.clientHeight,
+      0.1,
+      1000
+    );
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     containerRef.current.appendChild(renderer.domElement);
 
+    // Create materials
     const hologramShader = createHologramShader();
     const ringShader = createRingShader();
 
@@ -27,7 +34,7 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
       '/models/human.glb',
       (gltf) => {
         const human = gltf.scene;
-        human.traverse((child: THREE.Object3D) => {
+        human.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.material = hologramShader;
           }
@@ -35,10 +42,14 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
         human.scale.set(1.5, 1.5, 1.5);
         human.position.y = -0.5;
         scene.add(human);
+
+        console.log('Human model loaded successfully');
       },
-      undefined,
+      (progress) => {
+        console.log('Loading progress:', (progress.loaded / progress.total) * 100, '%');
+      },
       (error) => {
-        console.error('Error loading the model:', error);
+        console.error('Error loading human model:', error);
       }
     );
 
@@ -60,16 +71,20 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
+    // Position camera
     camera.position.z = 5;
 
+    // Animation loop
     const clock = new THREE.Clock();
     const animate = () => {
       requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
       
+      // Update shader uniforms
       hologramShader.uniforms.time.value = time;
       ringShader.uniforms.time.value = time;
 
+      // Rotate rings
       ring1.rotation.z += 0.01;
       ring2.rotation.z -= 0.01;
 
@@ -78,8 +93,10 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
 
     animate();
 
+    // Handle window resize
     const handleResize = () => {
       if (!containerRef.current) return;
+      
       camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
@@ -87,11 +104,13 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
 
     window.addEventListener('resize', handleResize);
 
+    // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
       if (containerRef.current) {
         containerRef.current.removeChild(renderer.domElement);
       }
+      renderer.dispose();
     };
   }, []);
 
