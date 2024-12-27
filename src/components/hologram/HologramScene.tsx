@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { createHologramShader } from './HologramShader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 interface HologramSceneProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -19,45 +20,23 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
       0.1,
       1000
     );
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true, 
+      antialias: true,
+      logarithmicDepthBuffer: true // Helps with model rendering
+    });
     
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Create a basic humanoid shape using geometry
-    const geometry = new THREE.CapsuleGeometry(0.5, 1, 4, 8);
-    const hologramMaterial = createHologramShader();
-    const humanoid = new THREE.Mesh(geometry, hologramMaterial);
-    
-    // Add limbs
-    const armGeometry = new THREE.CapsuleGeometry(0.15, 0.7, 4, 8);
-    const leftArm = new THREE.Mesh(armGeometry, hologramMaterial);
-    const rightArm = new THREE.Mesh(armGeometry, hologramMaterial);
-    
-    leftArm.position.set(-0.7, 0, 0);
-    rightArm.position.set(0.7, 0, 0);
-    
-    const legGeometry = new THREE.CapsuleGeometry(0.2, 1, 4, 8);
-    const leftLeg = new THREE.Mesh(legGeometry, hologramMaterial);
-    const rightLeg = new THREE.Mesh(legGeometry, hologramMaterial);
-    
-    leftLeg.position.set(-0.3, -1, 0);
-    rightLeg.position.set(0.3, -1, 0);
-    
-    // Create a group to hold all parts
-    const humanoidGroup = new THREE.Group();
-    humanoidGroup.add(humanoid);
-    humanoidGroup.add(leftArm);
-    humanoidGroup.add(rightArm);
-    humanoidGroup.add(leftLeg);
-    humanoidGroup.add(rightLeg);
-    
-    // Scale and position the group
-    humanoidGroup.scale.set(1, 1, 1);
-    humanoidGroup.position.set(0, 1, 0);
-    scene.add(humanoidGroup);
+    // Add controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
 
-    // Add lights
+    // Lighting setup
     const ambientLight = new THREE.AmbientLight(0x404040, 2);
     scene.add(ambientLight);
 
@@ -65,34 +44,81 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
-    // Position camera
-    camera.position.set(0, 1, 4);
-    camera.lookAt(0, 0, 0);
+    // Create hologram material
+    const hologramMaterial = createHologramShader();
 
-    // Animation loop
-    const clock = new THREE.Clock();
-    const animate = () => {
-      requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
+    // Load 3D Model
+    const loader = new GLTFLoader();
+    console.log('Starting to load model...');
+    
+    loader.load(
+      '/models/human.glb', // Make sure to place your model in the public/models directory
+      (gltf) => {
+        console.log('Model loaded successfully');
+        const model = gltf.scene;
+        
+        // Apply hologram material to all meshes
+        model.traverse((node) => {
+          if (node instanceof THREE.Mesh) {
+            node.material = hologramMaterial;
+          }
+        });
 
-      // Rotate the humanoid
-      humanoidGroup.rotation.y = Math.sin(elapsed * 0.5) * 0.5;
+        // Scale and position the model
+        model.scale.set(1, 1, 1);
+        model.position.y = 0;
 
-      // Update shader uniforms
-      scene.traverse((object) => {
-        if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
-          object.material.uniforms.time.value = elapsed;
+        scene.add(model);
+
+        // Setup animation if the model has it
+        const mixer = new THREE.AnimationMixer(model);
+        if (gltf.animations.length) {
+          console.log('Playing model animations');
+          const idleAnimation = mixer.clipAction(gltf.animations[0]);
+          idleAnimation.play();
         }
-      });
 
-      renderer.render(scene, camera);
-    };
+        // Update animation loop
+        const clock = new THREE.Clock();
+        
+        const animate = () => {
+          requestAnimationFrame(animate);
+          const delta = clock.getDelta();
 
-    animate();
+          // Update animation mixer
+          mixer.update(delta);
+
+          // Update controls
+          controls.update();
+
+          // Update shader uniforms
+          scene.traverse((object) => {
+            if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
+              object.material.uniforms.time.value = clock.getElapsedTime();
+            }
+          });
+
+          renderer.render(scene, camera);
+        };
+
+        // Position camera
+        camera.position.set(0, 1.6, 3);
+        camera.lookAt(0, 1, 0);
+
+        animate();
+      },
+      (progress) => {
+        console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+      },
+      (error) => {
+        console.error('Error loading model:', error);
+      }
+    );
 
     // Handle window resize
     const handleResize = () => {
       if (!containerRef.current) return;
+      
       camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
@@ -106,6 +132,7 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
       if (containerRef.current) {
         containerRef.current.removeChild(renderer.domElement);
       }
+      controls.dispose();
       renderer.dispose();
     };
   }, []);
