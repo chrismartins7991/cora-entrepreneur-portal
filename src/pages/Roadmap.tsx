@@ -43,49 +43,49 @@ export default function Roadmap() {
   };
 
   return (
-    <div className="min-h-screen bg-black p-4">
-      <div className="flex flex-col h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] bg-black p-2 sm:p-4">
+      <div className="flex flex-col h-[calc(100vh-6rem)] max-h-[calc(100vh-6rem)] overflow-hidden gap-4">
         {/* View Selection Buttons */}
-        <ScrollArea className="w-full whitespace-nowrap pb-4">
-          <div className="flex gap-2">
+        <ScrollArea className="w-full whitespace-nowrap pb-2">
+          <div className="flex gap-2 px-2">
             <Button
               variant={currentView === "cockpit" ? "default" : "outline"}
               onClick={() => setCurrentView("cockpit")}
-              className="flex-shrink-0"
+              className="flex-shrink-0 text-xs sm:text-sm"
             >
-              <Gauge className="mr-2 h-4 w-4" />
+              <Gauge className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Cockpit View
             </Button>
             <Button
               variant={currentView === "neuron" ? "default" : "outline"}
               onClick={() => setCurrentView("neuron")}
-              className="flex-shrink-0"
+              className="flex-shrink-0 text-xs sm:text-sm"
             >
-              <Brain className="mr-2 h-4 w-4" />
+              <Brain className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Neuron View
             </Button>
             <Button
               variant={currentView === "mindmap" ? "default" : "outline"}
               onClick={() => setCurrentView("mindmap")}
-              className="flex-shrink-0"
+              className="flex-shrink-0 text-xs sm:text-sm"
             >
-              <Map className="mr-2 h-4 w-4" />
+              <Map className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Mind Map View
             </Button>
             <Button
               variant={currentView === "list" ? "default" : "outline"}
               onClick={() => setCurrentView("list")}
-              className="flex-shrink-0"
+              className="flex-shrink-0 text-xs sm:text-sm"
             >
-              <BarChart2 className="mr-2 h-4 w-4" />
+              <BarChart2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               List View
             </Button>
             <Button
               variant={currentView === "notes" ? "default" : "outline"}
               onClick={() => setCurrentView("notes")}
-              className="flex-shrink-0"
+              className="flex-shrink-0 text-xs sm:text-sm"
             >
-              <FileText className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Notes View
             </Button>
           </div>
@@ -93,14 +93,15 @@ export default function Roadmap() {
 
         <div className="flex flex-col lg:flex-row flex-1 gap-4 overflow-hidden">
           {/* Main Content Area */}
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto min-h-[300px] lg:min-h-0">
             <GlassCard className="h-full">
               <div className="text-center">
                 {currentView === "neuron" && (
-                  <div className="relative w-full h-full min-h-[300px] lg:min-h-[600px]">
+                  <div className="relative w-full h-full min-h-[300px] lg:min-h-[500px]">
                     {sectors.map((sector, index) => {
-                      // Calculate positions based on viewport size
-                      const radius = Math.min(window.innerWidth * 0.15, 200); // Responsive radius
+                      const isMobile = window.innerWidth < 768;
+                      const radius = isMobile ? Math.min(window.innerWidth * 0.25, 120) : Math.min(window.innerWidth * 0.15, 200);
+                      const buttonSize = isMobile ? 40 : 60;
                       const centerX = "50%";
                       const centerY = "50%";
                       const angle = (index * (2 * Math.PI)) / sectors.length;
@@ -110,16 +111,16 @@ export default function Roadmap() {
                         <button
                           key={sector.name}
                           onClick={() => handleSectorClick(sector.name)}
-                          className="absolute transform -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-105 p-2 md:p-4"
+                          className="absolute transform -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-105 p-1 sm:p-2"
                           style={{
-                            width: isCenter ? "80px" : "60px",
-                            height: isCenter ? "80px" : "60px",
+                            width: isCenter ? buttonSize * 1.3 : buttonSize,
+                            height: isCenter ? buttonSize * 1.3 : buttonSize,
                             backgroundColor: sector.color,
                             top: isCenter ? centerY : `calc(${centerY} + ${Math.sin(angle) * radius}px)`,
                             left: isCenter ? centerX : `calc(${centerX} + ${Math.cos(angle) * radius}px)`,
                           }}
                         >
-                          <span className="font-bold text-white text-xs md:text-sm">
+                          <span className="font-bold text-white text-[10px] sm:text-xs">
                             {sector.name}
                           </span>
                         </button>
@@ -134,15 +135,15 @@ export default function Roadmap() {
           {/* Chat Sidebar */}
           <div className="w-full lg:w-[300px] flex flex-col gap-4">
             <GlassCard className="flex-1 overflow-y-auto">
-              <h3 className="text-lg font-bold mb-4">Chat with Cora</h3>
+              <h3 className="text-base sm:text-lg font-bold mb-4">Chat with Cora</h3>
               <ScrollArea className="h-[200px] lg:h-[400px]">
                 {chatHistory.map((msg, index) => (
                   <div
                     key={index}
                     className={`mb-2 ${msg.sender === "User" ? "text-right" : "text-left"}`}
                   >
-                    <span className="font-bold">{msg.sender}</span>
-                    <p className="text-sm">{msg.message}</p>
+                    <span className="font-bold text-sm">{msg.sender}</span>
+                    <p className="text-xs sm:text-sm">{msg.message}</p>
                   </div>
                 ))}
               </ScrollArea>
@@ -152,9 +153,9 @@ export default function Roadmap() {
                 placeholder="Type your message..."
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1"
+                className="flex-1 text-sm"
               />
-              <Button onClick={handleSendMessage}>Send</Button>
+              <Button onClick={handleSendMessage} className="text-sm">Send</Button>
             </div>
           </div>
         </div>
