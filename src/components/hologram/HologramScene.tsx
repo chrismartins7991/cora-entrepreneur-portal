@@ -24,11 +24,11 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     // Load human model
     const loader = new GLTFLoader();
     loader.load(
-      '/models/human.glb', // You'll need to add this model to your public/models directory
+      '/models/human.glb',
       (gltf) => {
         const human = gltf.scene;
-        human.traverse((child) => {
-          if (child.isMesh) {
+        human.traverse((child: THREE.Object3D) => {
+          if (child instanceof THREE.Mesh) {
             child.material = hologramShader;
           }
         });
