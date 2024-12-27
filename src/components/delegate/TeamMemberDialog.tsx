@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Send } from "lucide-react";
+import { useState } from "react";
 
 interface TeamMemberDialogProps {
   member: {
@@ -14,7 +15,7 @@ interface TeamMemberDialogProps {
   } | null;
   isOpen: boolean;
   onClose: () => void;
-  onDelegate: (memberId: string) => void;
+  onDelegate: (memberId: string, selectedTask: string) => void;
 }
 
 const getRecommendedTasks = (skills: string[]) => {
@@ -76,9 +77,17 @@ const getRecommendedTasks = (skills: string[]) => {
 };
 
 export const TeamMemberDialog = ({ member, isOpen, onClose, onDelegate }: TeamMemberDialogProps) => {
+  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+
   if (!member) return null;
 
   const recommendedTasks = getRecommendedTasks(member.skills);
+
+  const handleDelegate = () => {
+    if (selectedTask && member) {
+      onDelegate(member.id, selectedTask);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -107,22 +116,20 @@ export const TeamMemberDialog = ({ member, isOpen, onClose, onDelegate }: TeamMe
               </span>
             ))}
           </div>
-          <Button
-            className="w-full gap-2"
-            onClick={() => onDelegate(member.id)}
-          >
-            <Send className="h-4 w-4" />
-            Delegate Task
-          </Button>
 
           {/* Recommended Tasks Section */}
           <div className="mt-4">
-            <h4 className="font-medium mb-2">Recommended Tasks:</h4>
-            <ul className="space-y-2">
+            <h4 className="font-medium mb-2">Select a Task to Delegate:</h4>
+            <ul className="space-y-2 mb-4">
               {recommendedTasks.map((task, index) => (
                 <li 
                   key={index}
-                  className="flex items-center gap-2 text-sm p-2 rounded-lg bg-secondary/50"
+                  onClick={() => setSelectedTask(task)}
+                  className={`flex items-center gap-2 text-sm p-2 rounded-lg cursor-pointer transition-colors
+                    ${selectedTask === task 
+                      ? 'bg-purple-500/20 border-2 border-purple-500' 
+                      : 'bg-secondary/50 hover:bg-secondary'
+                    }`}
                 >
                   <span className="w-6 h-6 flex items-center justify-center rounded-full bg-purple-500/20 text-purple-500 text-xs">
                     {index + 1}
@@ -132,6 +139,15 @@ export const TeamMemberDialog = ({ member, isOpen, onClose, onDelegate }: TeamMe
               ))}
             </ul>
           </div>
+
+          <Button
+            className="w-full gap-2"
+            onClick={handleDelegate}
+            disabled={!selectedTask}
+          >
+            <Send className="h-4 w-4" />
+            Delegate {selectedTask ? `"${selectedTask}"` : 'Task'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

@@ -54,11 +54,13 @@ export default function Delegate() {
   const { toast } = useToast();
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
-  const handleDelegate = (memberId: string) => {
-    console.log("Delegating task to member:", memberId);
+  const handleDelegate = (memberId: string, selectedTask: string) => {
+    const member = teamMembers.find(m => m.id === memberId);
+    console.log("Delegating task:", selectedTask, "to member:", member?.name);
+    
     toast({
       title: "Task Delegated",
-      description: "The task has been assigned successfully.",
+      description: `Task "${selectedTask}" has been assigned to ${member?.name}.`,
       duration: 3000,
     });
     setSelectedMember(null);
