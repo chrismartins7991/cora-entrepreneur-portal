@@ -65,35 +65,35 @@ export default function Brain() {
   };
 
   return (
-    <div className="min-h-screen bg-black p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Entrepreneur's Brain</h1>
-        <p className="text-white/60">
+    <div className="h-full overflow-auto">
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Entrepreneur's Brain</h1>
+        <p className="text-sm md:text-base text-white/60">
           Unlock premium courses to enhance your entrepreneurial journey
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min pb-4">
         {courses.map((course) => (
-          <GlassCard key={course.id} className="relative overflow-hidden group">
+          <GlassCard key={course.id} className="flex flex-col h-auto">
             {/* Course Image */}
-            <div className="relative h-48 mb-4 rounded-lg overflow-hidden">
+            <div className="relative h-32 sm:h-40 mb-3 rounded-lg overflow-hidden">
               <img
                 src={course.imageUrl}
                 alt={course.title}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <Lock className="w-8 h-8 text-white/80" />
+                <Lock className="w-6 h-6 text-white/80" />
               </div>
             </div>
 
             {/* Course Info */}
-            <h3 className="text-xl font-semibold text-white mb-2">{course.title}</h3>
-            <p className="text-white/60 mb-4 line-clamp-2">{course.description}</p>
+            <h3 className="text-lg md:text-xl font-semibold text-white mb-2">{course.title}</h3>
+            <p className="text-sm text-white/60 mb-3 line-clamp-2">{course.description}</p>
 
             {/* Course Meta */}
-            <div className="flex items-center gap-4 mb-4 text-white/60 text-sm">
+            <div className="flex items-center gap-3 mb-3 text-white/60 text-xs md:text-sm">
               <div className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
                 {course.duration}
@@ -105,13 +105,14 @@ export default function Brain() {
             </div>
 
             {/* Price and Action */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-auto">
               <span className="text-white font-bold">${course.price}</span>
               <Button
                 onClick={() => handlePurchase(course.id)}
-                className="gap-2"
+                className="gap-2 text-sm"
+                size="sm"
               >
-                <Lock className="w-4 h-4" />
+                <Lock className="w-3 h-3" />
                 Unlock Course
               </Button>
             </div>
