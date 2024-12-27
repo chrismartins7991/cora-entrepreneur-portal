@@ -1,36 +1,34 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RevenueChart } from "@/components/dashboard/RevenueChart";
-import { TaskCompletionChart } from "@/components/dashboard/TaskCompletionChart";
-import { ActiveUsersChart } from "@/components/dashboard/ActiveUsersChart";
-import { ConversionRateChart } from "@/components/dashboard/ConversionRateChart";
-import { EngagementChart } from "@/components/dashboard/EngagementChart";
-
 export default function Dashboards() {
   return (
-    <div className="flex h-full flex-col overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
-        <h1 className="text-2xl font-bold tracking-tight text-white">Analytics Dashboard</h1>
-        <Select defaultValue="month">
-          <SelectTrigger className="w-[140px] sm:w-[180px] bg-black/40 border-white/10">
-            <SelectValue placeholder="Select period" />
-          </SelectTrigger>
-          <SelectContent className="bg-black/90 border-white/10">
-            <SelectItem value="day">Last 24 hours</SelectItem>
-            <SelectItem value="week">Last week</SelectItem>
-            <SelectItem value="month">Last month</SelectItem>
-            <SelectItem value="year">Last year</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Charts Grid */}
-      <div className="grid flex-1 grid-cols-1 lg:grid-cols-3 gap-4 overflow-auto">
-        <RevenueChart />
-        <TaskCompletionChart />
-        <ActiveUsersChart />
-        <ConversionRateChart />
-        <EngagementChart />
+    <div className="h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">Dashboards</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <GlassCard>
+            <h2 className="text-lg font-semibold text-white">Dashboard 1</h2>
+            <p className="text-white/60">Overview of key metrics and performance.</p>
+          </GlassCard>
+          <GlassCard>
+            <h2 className="text-lg font-semibold text-white">Dashboard 2</h2>
+            <p className="text-white/60">Detailed analytics and insights.</p>
+          </GlassCard>
+          <GlassCard>
+            <h2 className="text-lg font-semibold text-white">Dashboard 3</h2>
+            <p className="text-white/60">User engagement and activity tracking.</p>
+          </GlassCard>
+          <GlassCard>
+            <h2 className="text-lg font-semibold text-white">Dashboard 4</h2>
+            <p className="text-white/60">Sales performance and trends.</p>
+          </GlassCard>
+          <GlassCard>
+            <h2 className="text-lg font-semibold text-white">Dashboard 5</h2>
+            <p className="text-white/60">Marketing campaign effectiveness.</p>
+          </GlassCard>
+          <GlassCard>
+            <h2 className="text-lg font-semibold text-white">Dashboard 6</h2>
+            <p className="text-white/60">Customer feedback and satisfaction.</p>
+          </GlassCard>
+        </div>
       </div>
     </div>
   );
