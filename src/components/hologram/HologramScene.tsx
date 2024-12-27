@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { createHologramShader } from './HologramShader';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { setupLighting } from './SceneLighting';
+import { setupControls } from './SceneControls';
+import { loadModel } from './ModelLoader';
 
 interface HologramSceneProps {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -15,7 +15,7 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      75, // Increased FOV to see more of the model
+      75,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
@@ -31,87 +31,53 @@ export const HologramScene = ({ containerRef }: HologramSceneProps) => {
     renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Add controls with limitations
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.minDistance = 3;
-    controls.maxDistance = 8;
-    controls.minPolarAngle = Math.PI / 4;
-    controls.maxPolarAngle = (3 * Math.PI) / 4;
-    controls.enablePan = false;
+    // Setup lighting
+    setupLighting(scene);
 
-    // Lighting setup
-    const ambientLight = new THREE.AmbientLight(0x404040, 2);
-    scene.add(ambientLight);
+    // Setup controls
+    const controls = setupControls(camera, renderer);
 
-    const directionalLight = new THREE.DirectionalLight(0x8CECFE, 2);
-    directionalLight.position.set(5, 5, 5);
-    scene.add(directionalLight);
+    // Set initial camera position
+    camera.position.set(0, 0, 6);
+    camera.lookAt(0, -1, 0);
 
-    // Create hologram material
-    const hologramMaterial = createHologramShader();
+    const clock = new THREE.Clock();
+    let mixer: THREE.AnimationMixer;
 
-    // Load 3D Model
-    const loader = new GLTFLoader();
-    console.log('Starting to load model...');
-    
-    loader.load(
-      '/Human-Body.glb',
-      (gltf) => {
-        console.log('Model loaded successfully');
-        const model = gltf.scene;
-        
-        model.traverse((node) => {
-          if (node instanceof THREE.Mesh) {
-            node.material = hologramMaterial;
-          }
-        });
-
-        // Adjust model scale and position
-        model.scale.set(1.2, 1.2, 1.2);
-        model.position.set(0, -2, 0);
-        model.rotation.y = 0; // Changed to 0 to face the camera (model's default forward direction)
-
-        scene.add(model);
-
-        const mixer = new THREE.AnimationMixer(model);
-        if (gltf.animations.length) {
-          console.log('Playing model animations');
-          const idleAnimation = mixer.clipAction(gltf.animations[0]);
-          idleAnimation.play();
-        }
-
-        const clock = new THREE.Clock();
-        
-        const animate = () => {
-          requestAnimationFrame(animate);
-          const delta = clock.getDelta();
-          mixer.update(delta);
-          controls.update();
-
-          scene.traverse((object) => {
-            if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
-              object.material.uniforms.time.value = clock.getElapsedTime();
-            }
-          });
-
-          renderer.render(scene, camera);
-        };
-
-        // Set initial camera position
-        camera.position.set(0, 0, 6); // Moved camera back to see full body
-        camera.lookAt(0, -1, 0); // Look at the center of the model
-
-        animate();
+    // Load model
+    loadModel(scene, {
+      onLoad: (model, modelMixer) => {
+        mixer = modelMixer;
       },
-      (progress) => {
+      onProgress: (progress) => {
         console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
       },
-      (error) => {
+      onError: (error) => {
         console.error('Error loading model:', error);
       }
-    );
+    });
+
+    // Animation loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      
+      if (mixer) {
+        mixer.update(delta);
+      }
+      
+      controls.update();
+
+      scene.traverse((object) => {
+        if (object instanceof THREE.Mesh && object.material instanceof THREE.ShaderMaterial) {
+          object.material.uniforms.time.value = clock.getElapsedTime();
+        }
+      });
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
 
     // Handle window resize
     const handleResize = () => {
