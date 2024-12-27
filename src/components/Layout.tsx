@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Home, MessageCircle, Map, BarChart2, Plug, Zap, Users, Brain, User, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Home, MessageCircle, Map, BarChart2, Plug, Zap, Users, Brain, User, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const navItems = [
   { icon: Home, label: "HOME", href: "/" },
@@ -18,6 +20,17 @@ const navItems = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate("/login");
+      toast.success("Logged out successfully");
+    } catch (error) {
+      toast.error("Error logging out");
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full bg-black">
@@ -59,6 +72,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             )}
           </Link>
         ))}
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="absolute bottom-8 left-4 flex items-center gap-2 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10"
+        >
+          <LogOut className="h-5 w-5" />
+          <span>Logout</span>
+        </button>
       </nav>
 
       {/* Main content */}
