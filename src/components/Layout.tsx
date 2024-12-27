@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, Outlet } from "react-router-dom";
+import { Link, useNavigate, Outlet, useLocation } from "react-router-dom";
 import { Home, MessageCircle, Map, BarChart2, Plug, Zap, Users, Brain, User, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ const navItems = [
 export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -56,22 +57,34 @@ export default function Layout() {
         )}
       >
         <div className="mb-8 mt-16 text-2xl font-bold text-white md:mt-0">CORA</div>
-        {navItems.map((item) => (
-          <Link
-            key={item.label}
-            to={item.href}
-            onClick={() => setIsSidebarOpen(false)}
-            className="group mb-2 flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10"
-          >
-            <item.icon className="h-5 w-5" />
-            <span>{item.label}</span>
-            {item.soon && (
-              <span className="ml-auto rounded bg-yellow-500/20 px-2 py-0.5 text-xs text-yellow-500">
-                Soon
-              </span>
-            )}
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.href || 
+                         (item.href === "/" && location.pathname === "/") ||
+                         (item.href !== "/" && location.pathname.startsWith(item.href));
+          
+          return (
+            <Link
+              key={item.label}
+              to={item.href}
+              onClick={() => setIsSidebarOpen(false)}
+              className={cn(
+                "group mb-2 flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-colors hover:bg-white/10",
+                isActive && "bg-white/20 font-medium"
+              )}
+            >
+              <item.icon className={cn(
+                "h-5 w-5",
+                isActive && "text-purple-400"
+              )} />
+              <span>{item.label}</span>
+              {item.soon && (
+                <span className="ml-auto rounded bg-yellow-500/20 px-2 py-0.5 text-xs text-yellow-500">
+                  Soon
+                </span>
+              )}
+            </Link>
+          );
+        })}
 
         {/* Logout Button */}
         <button
