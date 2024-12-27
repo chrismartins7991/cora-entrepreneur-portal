@@ -17,66 +17,80 @@ export default function Entrepreneur() {
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    scene.add(ambientLight);
+    // Hologram shader material
+    const hologramShader = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        glowColor: { value: new THREE.Color(0x00ffff) },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying float vPosY;
+        void main() {
+          vUv = uv;
+          vPosY = position.y;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform vec3 glowColor;
+        varying vec2 vUv;
+        varying float vPosY;
+        
+        void main() {
+          float scanLine = smoothstep(0.0, 0.1, fract(vPosY * 10.0 - time));
+          float glow = 0.6 + 0.4 * sin(time + vUv.y * 20.0);
+          vec3 color = glowColor * glow;
+          float alpha = 0.6 * glow + 0.3 * scanLine;
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
 
-    // Add directional light
-    const directionalLight = new THREE.DirectionalLight(0x8CECFE, 1);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
-
-    // Create human body parts
+    // Create human mesh with improved geometry
     const createHumanMesh = () => {
       const group = new THREE.Group();
 
-      // Create a more anatomically correct human body
-      const bodyGeometry = new THREE.CapsuleGeometry(0.3, 1.2, 4, 16);
-      const bodyMaterial = new THREE.MeshPhongMaterial({
-        color: 0x103DEF,
-        transparent: true,
-        opacity: 0.6,
-        emissive: 0x8CECFE,
-        emissiveIntensity: 0.5,
-        side: THREE.DoubleSide,
-      });
-
-      // Main body
-      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+      // Main body - using smoother geometry
+      const bodyGeometry = new THREE.CapsuleGeometry(0.3, 1.2, 16, 32);
+      const body = new THREE.Mesh(bodyGeometry, hologramShader);
       body.position.y = 0;
       group.add(body);
 
-      // Head
+      // Head - smoother sphere
       const headGeometry = new THREE.SphereGeometry(0.2, 32, 32);
-      const head = new THREE.Mesh(headGeometry, bodyMaterial);
+      const head = new THREE.Mesh(headGeometry, hologramShader);
       head.position.y = 0.9;
       group.add(head);
 
-      // Arms
-      const armGeometry = new THREE.CapsuleGeometry(0.08, 0.8, 4, 8);
+      // Arms - smoother capsules
+      const armGeometry = new THREE.CapsuleGeometry(0.08, 0.8, 8, 16);
       
       // Left arm
-      const leftArm = new THREE.Mesh(armGeometry, bodyMaterial);
+      const leftArm = new THREE.Mesh(armGeometry, hologramShader);
       leftArm.position.set(-0.4, 0.3, 0);
       leftArm.rotation.z = Math.PI / 8;
       group.add(leftArm);
 
       // Right arm
-      const rightArm = new THREE.Mesh(armGeometry, bodyMaterial);
+      const rightArm = new THREE.Mesh(armGeometry, hologramShader);
       rightArm.position.set(0.4, 0.3, 0);
       rightArm.rotation.z = -Math.PI / 8;
       group.add(rightArm);
 
-      // Legs
-      const legGeometry = new THREE.CapsuleGeometry(0.1, 0.8, 4, 8);
+      // Legs - smoother capsules
+      const legGeometry = new THREE.CapsuleGeometry(0.1, 0.8, 8, 16);
       
       // Left leg
-      const leftLeg = new THREE.Mesh(legGeometry, bodyMaterial);
+      const leftLeg = new THREE.Mesh(legGeometry, hologramShader);
       leftLeg.position.set(-0.2, -0.8, 0);
       group.add(leftLeg);
 
       // Right leg
-      const rightLeg = new THREE.Mesh(legGeometry, bodyMaterial);
+      const rightLeg = new THREE.Mesh(legGeometry, hologramShader);
       rightLeg.position.set(0.2, -0.8, 0);
       group.add(rightLeg);
 
@@ -86,12 +100,31 @@ export default function Entrepreneur() {
     const human = createHumanMesh();
     scene.add(human);
 
-    // Add holographic rings
+    // Add holographic rings with shader material
     const ringGeometry = new THREE.TorusGeometry(1, 0.02, 16, 100);
-    const ringMaterial = new THREE.MeshPhongMaterial({
-      color: 0x8CECFE,
+    const ringMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        varying vec2 vUv;
+        void main() {
+          float pulse = 0.5 + 0.5 * sin(time * 2.0 + vUv.x * 10.0);
+          vec3 color = vec3(0.0, 0.8, 1.0) * pulse;
+          float alpha = 0.3 * pulse;
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
       transparent: true,
-      opacity: 0.3,
+      side: THREE.DoubleSide,
     });
 
     const ring1 = new THREE.Mesh(ringGeometry, ringMaterial);
@@ -102,12 +135,28 @@ export default function Entrepreneur() {
     ring2.scale.set(1.5, 1.5, 1.5);
     scene.add(ring2);
 
+    // Add ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+
+    // Add directional light
+    const directionalLight = new THREE.DirectionalLight(0x8CECFE, 1);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+
     // Position camera
     camera.position.z = 5;
 
     // Animation
+    const clock = new THREE.Clock();
     const animate = () => {
       requestAnimationFrame(animate);
+
+      const time = clock.getElapsedTime();
+      
+      // Update shader uniforms
+      hologramShader.uniforms.time.value = time;
+      ringMaterial.uniforms.time.value = time;
 
       human.rotation.y += 0.005;
       ring1.rotation.z += 0.01;
@@ -147,7 +196,6 @@ export default function Entrepreneur() {
 
   return (
     <div className="min-h-screen w-full p-4 relative">
-      {/* Hologram Container */}
       <div 
         ref={containerRef} 
         className="w-full aspect-square max-w-2xl mx-auto mb-8 relative"
@@ -156,7 +204,6 @@ export default function Entrepreneur() {
         }}
       />
 
-      {/* Metrics Display */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
         <GlassCard className="flex flex-col items-center justify-center p-6 backdrop-blur-lg">
           <h3 className="text-lg font-semibold mb-4 text-cora-lightBlue">Stress Level</h3>
