@@ -5,7 +5,6 @@ import { GlassCard } from "@/components/GlassCard";
 import { Brain, Map, BarChart2, Gauge, FileText } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 const sectors = [
   { name: "Core", color: "#6530D3", departments: ["Strategy", "Innovation", "Leadership"] },
@@ -22,7 +21,6 @@ export default function Roadmap() {
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<Array<{sender: string, message: string}>>([]);
   const { toast } = useToast();
-  const isMobile = useIsMobile();
 
   const handleSectorClick = (sectorName: string) => {
     setOpenSector(openSector === sectorName ? null : sectorName);
@@ -93,16 +91,17 @@ export default function Roadmap() {
           </div>
         </ScrollArea>
 
-        <div className="flex flex-col lg:flex-row flex-1 gap-4 overflow-y-auto lg:overflow-hidden">
+        <div className="flex flex-col lg:flex-row flex-1 gap-4 overflow-hidden">
           {/* Main Content Area */}
-          <div className="flex-1 min-h-[300px] lg:min-h-0 overflow-y-auto">
+          <div className="flex-1 overflow-auto min-h-[300px] lg:min-h-0">
             <GlassCard className="h-full">
               <div className="text-center">
                 {currentView === "neuron" && (
                   <div className="relative w-full h-full min-h-[300px] lg:min-h-[500px]">
                     {sectors.map((sector, index) => {
-                      const radius = isMobile ? Math.min(window.innerWidth * 0.2, 100) : Math.min(window.innerWidth * 0.15, 200);
-                      const buttonSize = isMobile ? 50 : 60;
+                      const isMobile = window.innerWidth < 768;
+                      const radius = isMobile ? Math.min(window.innerWidth * 0.25, 120) : Math.min(window.innerWidth * 0.15, 200);
+                      const buttonSize = isMobile ? 40 : 60;
                       const centerX = "50%";
                       const centerY = "50%";
                       const angle = (index * (2 * Math.PI)) / sectors.length;
@@ -135,20 +134,18 @@ export default function Roadmap() {
 
           {/* Chat Sidebar */}
           <div className="w-full lg:w-[300px] flex flex-col gap-4">
-            <GlassCard className="flex-1 overflow-hidden">
+            <GlassCard className="flex-1 overflow-y-auto">
               <h3 className="text-base sm:text-lg font-bold mb-4">Chat with Cora</h3>
               <ScrollArea className="h-[200px] lg:h-[400px]">
-                <div className="space-y-4 p-2">
-                  {chatHistory.map((msg, index) => (
-                    <div
-                      key={index}
-                      className={`mb-2 ${msg.sender === "User" ? "text-right" : "text-left"}`}
-                    >
-                      <span className="font-bold text-sm">{msg.sender}</span>
-                      <p className="text-xs sm:text-sm">{msg.message}</p>
-                    </div>
-                  ))}
-                </div>
+                {chatHistory.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`mb-2 ${msg.sender === "User" ? "text-right" : "text-left"}`}
+                  >
+                    <span className="font-bold text-sm">{msg.sender}</span>
+                    <p className="text-xs sm:text-sm">{msg.message}</p>
+                  </div>
+                ))}
               </ScrollArea>
             </GlassCard>
             <div className="flex gap-2">

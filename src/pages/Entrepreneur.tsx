@@ -1,49 +1,43 @@
-import { GlassCard } from "@/components/GlassCard";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRef } from 'react';
+import { HologramScene } from '@/components/hologram/HologramScene';
+import { HealthMetricsGrid } from '@/components/metrics/HealthMetricsGrid';
 
 export default function Entrepreneur() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const healthMetrics = {
+    stress: 65,
+    hydration: 82,
+    energy: 75,
+  };
+
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">Entrepreneur</h1>
+    <div className="min-h-screen w-full relative overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-white mb-8">Entrepreneur Dashboard</h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <GlassCard>
-            <h2 className="text-xl font-semibold text-white mb-3">Business Overview</h2>
-            <p className="text-white/60 mb-4">Track your business metrics and performance</p>
-            <Button className="w-full">View Details</Button>
-          </GlassCard>
+        <div className="flex flex-col items-center justify-center gap-4">
+          {/* Hologram container with adjusted dimensions */}
+          <div className="relative w-full max-w-2xl aspect-[4/3]">
+            <div 
+              ref={containerRef}
+              className="absolute inset-0 flex items-center justify-center"
+              style={{
+                background: 'radial-gradient(circle at center, rgba(13,71,161,0.1) 0%, rgba(0,0,0,0) 70%)',
+              }}
+            >
+              <HologramScene containerRef={containerRef} />
+            </div>
+          </div>
 
-          <GlassCard>
-            <h2 className="text-xl font-semibold text-white mb-3">Financial Reports</h2>
-            <p className="text-white/60 mb-4">Access your financial statements and analytics</p>
-            <Button className="w-full">View Reports</Button>
-          </GlassCard>
+          {/* Health Metrics Grid moved up and closer */}
+          <div className="w-full max-w-4xl -mt-8">
+            <HealthMetricsGrid metrics={healthMetrics} />
+          </div>
+        </div>
 
-          <GlassCard>
-            <h2 className="text-xl font-semibold text-white mb-3">Team Management</h2>
-            <p className="text-white/60 mb-4">Manage your team and assignments</p>
-            <Button className="w-full">Manage Team</Button>
-          </GlassCard>
-
-          <GlassCard>
-            <h2 className="text-xl font-semibold text-white mb-3">Goals & Milestones</h2>
-            <p className="text-white/60 mb-4">Track your business goals and achievements</p>
-            <Button className="w-full">View Goals</Button>
-          </GlassCard>
-
-          <GlassCard>
-            <h2 className="text-xl font-semibold text-white mb-3">Resources</h2>
-            <p className="text-white/60 mb-4">Access entrepreneurial resources and guides</p>
-            <Button className="w-full">Browse Resources</Button>
-          </GlassCard>
-
-          <GlassCard>
-            <h2 className="text-xl font-semibold text-white mb-3">Networking</h2>
-            <p className="text-white/60 mb-4">Connect with other entrepreneurs</p>
-            <Button className="w-full">Network</Button>
-          </GlassCard>
+        <div className="mt-8 text-center text-white/80">
+          <p>Your personal AI assistant for business growth</p>
         </div>
       </div>
     </div>

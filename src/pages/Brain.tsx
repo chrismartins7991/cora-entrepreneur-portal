@@ -1,112 +1,124 @@
 import { GlassCard } from "@/components/GlassCard";
-import { Book, Lightbulb, Search, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Lock, PlayCircle, Clock, BookOpen } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  lessons: number;
+  price: number;
+  imageUrl: string;
+}
+
+const courses: Course[] = [
+  {
+    id: "1",
+    title: "Business Model Innovation",
+    description: "Learn how to create and validate innovative business models that disrupt markets.",
+    duration: "6 hours",
+    lessons: 12,
+    price: 199,
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    id: "2",
+    title: "Growth Hacking Mastery",
+    description: "Discover proven strategies to scale your startup rapidly with minimal budget.",
+    duration: "8 hours",
+    lessons: 15,
+    price: 249,
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    id: "3",
+    title: "Startup Finance Essentials",
+    description: "Master the fundamentals of financial management for early-stage startups.",
+    duration: "5 hours",
+    lessons: 10,
+    price: 179,
+    imageUrl: "/placeholder.svg"
+  },
+  {
+    id: "4",
+    title: "Leadership & Team Building",
+    description: "Build and lead high-performing teams in fast-paced startup environments.",
+    duration: "7 hours",
+    lessons: 14,
+    price: 229,
+    imageUrl: "/placeholder.svg"
+  }
+];
 
 export default function Brain() {
+  const { toast } = useToast();
+
+  const handlePurchase = (courseId: string) => {
+    console.log("Attempting to purchase course:", courseId);
+    toast({
+      title: "Purchase Required",
+      description: "This course is currently locked. Purchase to gain access.",
+      duration: 3000,
+    });
+  };
+
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">Brain</h1>
-        <p className="text-white/60 mb-8">
-          Explore the capabilities of Cora AI in enhancing your cognitive processes.
+    <div className="h-full overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Entrepreneur's Brain</h1>
+        <p className="text-sm md:text-base text-white/60">
+          Unlock premium courses to enhance your entrepreneurial journey
         </p>
+      </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <GlassCard>
-            <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-purple-500/10">
-                <Lightbulb className="h-6 w-6 text-purple-500" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-white">Idea Generation</h2>
-                <p className="text-white/60">Use Cora AI to brainstorm and generate innovative ideas.</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-4 md:pb-0 h-[calc(100%-5rem)] md:h-[calc(100%-4rem)]">
+        {courses.map((course) => (
+          <GlassCard key={course.id} className="flex flex-col h-auto md:h-fit">
+            {/* Course Image */}
+            <div className="relative h-32 sm:h-40 mb-3 rounded-lg overflow-hidden">
+              <img
+                src={course.imageUrl}
+                alt={course.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <Lock className="w-6 h-6 text-white/80" />
               </div>
             </div>
-          </GlassCard>
 
-          <GlassCard>
-            <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <Search className="h-6 w-6 text-blue-500" />
+            {/* Course Info */}
+            <h3 className="text-lg md:text-xl font-semibold text-white mb-2">{course.title}</h3>
+            <p className="text-sm text-white/60 mb-3 line-clamp-2">{course.description}</p>
+
+            {/* Course Meta */}
+            <div className="flex items-center gap-3 mb-3 text-white/60 text-xs md:text-sm">
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                {course.duration}
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-white">Research Assistance</h2>
-                <p className="text-white/60">Get help with research and data analysis.</p>
+              <div className="flex items-center gap-1">
+                <BookOpen className="w-4 h-4" />
+                {course.lessons} lessons
               </div>
             </div>
-          </GlassCard>
 
-          <GlassCard>
-            <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-green-500/10">
-                <Target className="h-6 w-6 text-green-500" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-white">Decision Support</h2>
-                <p className="text-white/60">Leverage AI to make informed decisions.</p>
-              </div>
+            {/* Price and Action */}
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-white font-bold">${course.price}</span>
+              <Button
+                onClick={() => handlePurchase(course.id)}
+                className="gap-2 text-sm"
+                size="sm"
+              >
+                <Lock className="w-3 h-3" />
+                Unlock Course
+              </Button>
             </div>
           </GlassCard>
-        </div>
-
-        {/* Courses Section */}
-        <h2 className="text-xl md:text-2xl font-bold text-white mb-4">Available Courses</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {courses.map((course, index) => (
-            <GlassCard key={index} className="flex flex-col">
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-indigo-500/10">
-                  <Book className="h-6 w-6 text-indigo-500" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white">{course.title}</h3>
-                  <p className="text-white/60 mb-2">{course.description}</p>
-                  <span className="text-xs text-indigo-400">{course.duration} • {course.lessons} lessons</span>
-                </div>
-              </div>
-            </GlassCard>
-          ))}
-        </div>
+        ))}
       </div>
     </div>
   );
 }
-
-const courses = [
-  {
-    title: "AI Fundamentals",
-    description: "Learn the basics of artificial intelligence and machine learning.",
-    duration: "4 weeks",
-    lessons: 12
-  },
-  {
-    title: "Data Analysis",
-    description: "Master data analysis techniques using modern tools.",
-    duration: "6 weeks",
-    lessons: 18
-  },
-  {
-    title: "Critical Thinking",
-    description: "Develop advanced critical thinking and problem-solving skills.",
-    duration: "3 weeks",
-    lessons: 9
-  },
-  {
-    title: "Creative Problem Solving",
-    description: "Learn innovative approaches to solving complex problems.",
-    duration: "5 weeks",
-    lessons: 15
-  },
-  {
-    title: "Decision Making",
-    description: "Improve your decision-making process with data-driven methods.",
-    duration: "4 weeks",
-    lessons: 12
-  },
-  {
-    title: "Strategic Planning",
-    description: "Master the art of strategic planning and execution.",
-    duration: "6 weeks",
-    lessons: 18
-  }
-];
