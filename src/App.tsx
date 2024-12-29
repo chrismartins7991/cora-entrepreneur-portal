@@ -37,17 +37,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         if (session?.user) {
           setIsAuthenticated(true);
           
-          // Check onboarding status
+          // Check onboarding status using maybeSingle() instead of single()
           const { data: profile, error } = await supabase
             .from("profiles")
             .select("is_onboarded")
             .eq("id", session.user.id)
-            .single();
+            .maybeSingle();
           
           console.log("ProtectedRoute: Onboarding check", { profile, error });
           
-          if (!error && profile) {
-            setIsOnboarded(profile.is_onboarded);
+          if (!error) {
+            setIsOnboarded(profile?.is_onboarded ?? false);
+          } else {
+            console.error("Error fetching profile:", error);
+            setIsOnboarded(false);
           }
         } else {
           setIsAuthenticated(false);
@@ -73,7 +76,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           .from("profiles")
           .select("is_onboarded")
           .eq("id", session.user.id)
-          .single();
+          .maybeSingle();
         
         setIsOnboarded(profile?.is_onboarded ?? false);
       } else {
