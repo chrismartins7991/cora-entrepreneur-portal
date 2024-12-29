@@ -6,23 +6,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export function BusinessProfileStep() {
   const [formData, setFormData] = useState({
-    businessName: "",
+    business_name: "",
     industry: "",
-    businessStage: "",
-    teamSize: "",
-    businessModel: "",
+    business_stage: "",
+    team_size: "",
+    business_model: "",
   });
 
   const handleChange = async (field: string, value: string) => {
+    console.log("BusinessProfileStep: Updating field", { field, value });
+    
     setFormData((prev) => ({ ...prev, [field]: value }));
     
     try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user?.id) throw new Error("No user ID found");
+
       const { error } = await supabase
         .from("profiles")
-        .update({ [field]: value })
-        .eq("id", (await supabase.auth.getUser()).data.user?.id);
+        .update({ [field]: field === 'team_size' ? parseInt(value) : value })
+        .eq("id", user.user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error(`Error updating ${field}:`, error);
+        throw error;
+      }
+      
+      console.log(`BusinessProfileStep: Successfully updated ${field}`);
     } catch (error) {
       console.error(`Error updating ${field}:`, error);
     }
@@ -37,11 +47,11 @@ export function BusinessProfileStep() {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="businessName">Business Name</Label>
+          <Label htmlFor="business_name">Business Name</Label>
           <Input
-            id="businessName"
+            id="business_name"
             placeholder="Enter your business name"
-            value={formData.businessName}
+            value={formData.business_name}
             onChange={(e) => handleChange("business_name", e.target.value)}
           />
         </div>
@@ -66,9 +76,9 @@ export function BusinessProfileStep() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="businessStage">Business Stage</Label>
+          <Label htmlFor="business_stage">Business Stage</Label>
           <Select
-            value={formData.businessStage}
+            value={formData.business_stage}
             onValueChange={(value) => handleChange("business_stage", value)}
           >
             <SelectTrigger>
@@ -84,20 +94,20 @@ export function BusinessProfileStep() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="teamSize">Team Size</Label>
+          <Label htmlFor="team_size">Team Size</Label>
           <Input
-            id="teamSize"
+            id="team_size"
             type="number"
             placeholder="Enter team size"
-            value={formData.teamSize}
+            value={formData.team_size}
             onChange={(e) => handleChange("team_size", e.target.value)}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="businessModel">Business Model</Label>
+          <Label htmlFor="business_model">Business Model</Label>
           <Select
-            value={formData.businessModel}
+            value={formData.business_model}
             onValueChange={(value) => handleChange("business_model", value)}
           >
             <SelectTrigger>
