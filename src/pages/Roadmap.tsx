@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GlassCard } from "@/components/GlassCard";
-import { Brain, Map, BarChart2, Gauge, FileText } from "lucide-react";
+import { Brain, Map, BarChart2, Gauge, FileText, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const sectors = [
   { name: "Core", color: "#6530D3", departments: ["Strategy", "Innovation", "Leadership"] },
@@ -20,7 +22,48 @@ export default function Roadmap() {
   const [openSector, setOpenSector] = useState<string | null>(null);
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<Array<{sender: string, message: string}>>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+
+  // Fetch the roadmap data
+  const { data: roadmapData, isLoading, error, refetch } = useQuery({
+    queryKey: ['roadmap'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('roadmap')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const generateRoadmap = async () => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-roadmap');
+      if (error) throw error;
+      
+      toast({
+        title: "Roadmap Generated",
+        description: "Your personalized roadmap has been created based on your profile.",
+      });
+      
+      refetch();
+    } catch (error) {
+      console.error('Error generating roadmap:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate roadmap. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleSectorClick = (sectorName: string) => {
     setOpenSector(openSector === sectorName ? null : sectorName);
@@ -43,7 +86,7 @@ export default function Roadmap() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-black p-2 sm:p-4 overflow-y-auto md:overflow-hidden pb-24 md:pb-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-black p-2 sm:p-4 overflow-y-auto md:overflow-hidden pb-8">
       <div className="flex flex-col h-[calc(100vh-6rem)] max-h-[calc(100vh-6rem)] overflow-hidden gap-4">
         {/* View Selection Buttons */}
         <ScrollArea className="w-full whitespace-nowrap pb-2">
@@ -94,41 +137,76 @@ export default function Roadmap() {
         <div className="flex flex-col lg:flex-row flex-1 gap-4 overflow-hidden">
           {/* Main Content Area */}
           <div className="flex-1 overflow-auto min-h-[300px] lg:min-h-0">
-            <GlassCard className="h-full">
-              <div className="text-center">
-                {currentView === "neuron" && (
-                  <div className="relative w-full h-full min-h-[300px] lg:min-h-[500px]">
-                    {sectors.map((sector, index) => {
-                      const isMobile = window.innerWidth < 768;
-                      const radius = isMobile ? Math.min(window.innerWidth * 0.25, 120) : Math.min(window.innerWidth * 0.15, 200);
-                      const buttonSize = isMobile ? 40 : 60;
-                      const centerX = "50%";
-                      const centerY = "50%";
-                      const angle = (index * (2 * Math.PI)) / sectors.length;
-                      const isCenter = index === 0;
-
-                      return (
-                        <button
-                          key={sector.name}
-                          onClick={() => handleSectorClick(sector.name)}
-                          className="absolute transform -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-105 p-1 sm:p-2"
-                          style={{
-                            width: isCenter ? buttonSize * 1.3 : buttonSize,
-                            height: isCenter ? buttonSize * 1.3 : buttonSize,
-                            backgroundColor: sector.color,
-                            top: isCenter ? centerY : `calc(${centerY} + ${Math.sin(angle) * radius}px)`,
-                            left: isCenter ? centerX : `calc(${centerX} + ${Math.cos(angle) * radius}px)`,
-                          }}
-                        >
-                          <span className="font-bold text-white text-[10px] sm:text-xs">
-                            {sector.name}
-                          </span>
-                        </button>
-                      );
-                    })}
+            <GlassCard className="h-full p-4">
+              {currentView === 'neuron' && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-white">Your Business Roadmap</h2>
+                    <Button
+                      onClick={generateRoadmap}
+                      disabled={isGenerating}
+                      className="flex items-center gap-2"
+                    >
+                      {isGenerating ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Brain className="h-4 w-4" />
+                      )}
+                      {isGenerating ? "Generating..." : "Generate Roadmap"}
+                    </Button>
                   </div>
-                )}
-              </div>
+
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-64">
+                      <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+                    </div>
+                  ) : error ? (
+                    <div className="text-center text-red-500">
+                      Failed to load roadmap. Please try again.
+                    </div>
+                  ) : roadmapData?.tasks?.milestones ? (
+                    <ScrollArea className="h-[calc(100vh-16rem)]">
+                      <div className="space-y-6">
+                        {roadmapData.tasks.milestones.map((milestone: any, index: number) => (
+                          <div key={index} className="space-y-4">
+                            <div className="border-l-4 border-purple-500 pl-4">
+                              <h3 className="text-lg font-semibold text-white">{milestone.title}</h3>
+                              <p className="text-sm text-white/60">{milestone.description}</p>
+                              <span className="text-xs text-purple-400">{milestone.timeline}</span>
+                            </div>
+                            <div className="space-y-2 pl-6">
+                              {milestone.tasks.map((task: any, taskIndex: number) => (
+                                <div
+                                  key={taskIndex}
+                                  className="rounded-lg border border-white/10 bg-white/5 p-3"
+                                >
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <h4 className="font-medium text-white">{task.title}</h4>
+                                      <p className="text-sm text-white/60">{task.description}</p>
+                                    </div>
+                                    <span className={`text-xs px-2 py-1 rounded-full ${
+                                      task.priority === 'high' ? 'bg-red-500/20 text-red-500' :
+                                      task.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-500' :
+                                      'bg-green-500/20 text-green-500'
+                                    }`}>
+                                      {task.priority}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  ) : (
+                    <div className="text-center text-white/60">
+                      No roadmap generated yet. Click the button above to create one.
+                    </div>
+                  )}
+                </div>
+              )}
             </GlassCard>
           </div>
 
