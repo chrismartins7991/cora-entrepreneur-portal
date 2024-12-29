@@ -21,17 +21,17 @@ const monthlyData = [
 export default function Index() {
   return (
     <div className="h-full w-full overflow-y-auto md:overflow-hidden">
-      <div className="min-h-screen w-full px-4 py-6 pb-16 sm:p-8">
-        <div className="mb-6 sm:mb-8 text-center">
+      <div className="min-h-screen w-full px-4 py-4 pb-8 sm:p-6 lg:p-8">
+        <div className="mb-4 sm:mb-6 text-center">
           <h1 className="mb-2 text-xl sm:text-2xl md:text-3xl font-bold text-white">Good Afternoon, Christian</h1>
           <p className="text-xs sm:text-sm md:text-base text-white/80">
             "Success is not final, failure is not fatal: it is the courage to continue that counts."
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {/* Finances */}
-          <GlassCard className="p-4 sm:p-6">
+          <GlassCard className="p-3 sm:p-4 lg:p-6">
             <h3 className="mb-2 font-semibold text-white text-sm sm:text-base">Finances</h3>
             <p className="text-xs sm:text-sm text-white/80">Available Budget: 1032€</p>
             <p className="mt-2 text-xs sm:text-sm text-white/60">Main Expenses:</p>
@@ -39,7 +39,7 @@ export default function Index() {
           </GlassCard>
 
           {/* Reminders */}
-          <GlassCard className="p-4 sm:p-6">
+          <GlassCard className="p-3 sm:p-4 lg:p-6">
             <h3 className="mb-2 font-semibold text-white text-sm sm:text-base">Reminders</h3>
             <ul className="space-y-1 text-xs sm:text-sm text-white/80">
               <li>• Update icons</li>
@@ -51,7 +51,7 @@ export default function Index() {
           </GlassCard>
 
           {/* Quick Question */}
-          <GlassCard className="p-4 sm:p-6">
+          <GlassCard className="p-3 sm:p-4 lg:p-6">
             <h3 className="mb-2 font-semibold text-white text-sm sm:text-base">Quick Question</h3>
             <p className="mb-2 text-xs sm:text-sm text-white/80">
               Should I text Bruno to let him know our budget limits?
@@ -63,9 +63,9 @@ export default function Index() {
           </GlassCard>
 
           {/* Daily Tasks */}
-          <GlassCard className="col-span-1 sm:col-span-2 p-4 sm:p-6">
-            <h3 className="mb-4 font-semibold text-white text-sm sm:text-base">Daily Tasks</h3>
-            <div className="h-[180px]">
+          <GlassCard className="col-span-1 sm:col-span-2 p-3 sm:p-4 lg:p-6">
+            <h3 className="mb-3 sm:mb-4 font-semibold text-white text-sm sm:text-base">Daily Tasks</h3>
+            <div className="h-[140px] sm:h-[160px] lg:h-[180px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -79,7 +79,7 @@ export default function Index() {
           </GlassCard>
 
           {/* Current Project */}
-          <GlassCard className="p-4 sm:p-6">
+          <GlassCard className="p-3 sm:p-4 lg:p-6">
             <h3 className="mb-2 font-semibold text-white text-sm sm:text-base">Current Project</h3>
             <p className="mb-4 text-xs sm:text-sm text-white/80">Designing a Travel App</p>
             <div className="h-2 overflow-hidden rounded-full bg-white/10">
@@ -88,9 +88,9 @@ export default function Index() {
           </GlassCard>
 
           {/* Monthly Completion */}
-          <GlassCard className="col-span-1 sm:col-span-2 lg:col-span-3 p-4 sm:p-6">
-            <h3 className="mb-4 font-semibold text-white text-sm sm:text-base">Monthly Completion</h3>
-            <div className="h-[160px]">
+          <GlassCard className="col-span-1 sm:col-span-2 lg:col-span-3 p-3 sm:p-4 lg:p-6">
+            <h3 className="mb-3 sm:mb-4 font-semibold text-white text-sm sm:text-base">Monthly Completion</h3>
+            <div className="h-[120px] sm:h-[140px] lg:h-[160px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
