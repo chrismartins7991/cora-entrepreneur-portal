@@ -29,18 +29,30 @@ export default function Roadmap() {
   const { data: roadmapData, isLoading, error, refetch } = useQuery({
     queryKey: ['roadmap'],
     queryFn: async () => {
+      console.log('Fetching roadmap data...');
       const { data, error } = await supabase
         .from('roadmap')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching roadmap:', error);
+        throw error;
+      }
       
+      console.log('Fetched roadmap data:', data);
+      
+      if (!data) {
+        console.log('No roadmap found');
+        return null;
+      }
+
       // Safely type cast the tasks field
       const parsedTasks = data.tasks as unknown;
       if (!isValidRoadmapData(parsedTasks)) {
+        console.error('Invalid roadmap data structure:', parsedTasks);
         throw new Error('Invalid roadmap data structure');
       }
       
@@ -191,6 +203,10 @@ export default function Roadmap() {
                   ) : error ? (
                     <div className="text-center text-red-500">
                       Failed to load roadmap. Please try again.
+                    </div>
+                  ) : !roadmapData ? (
+                    <div className="text-center text-white/60">
+                      No roadmap generated yet. Click the button above to create one.
                     </div>
                   ) : roadmapData?.tasks?.milestones ? (
                     <ScrollArea className="h-[calc(100vh-16rem)]">
