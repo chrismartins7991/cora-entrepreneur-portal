@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
@@ -25,36 +25,39 @@ export function OnboardingLayout({
   canProceed = true,
 }: OnboardingLayoutProps) {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const progress = (currentStep / totalSteps) * 100;
 
   const handleFinish = async () => {
+    console.log("OnboardingLayout: Starting onboarding completion...");
     setIsSubmitting(true);
+    
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
       const { error } = await supabase
         .from("profiles")
         .update({
           is_onboarded: true,
           onboarding_completed_at: new Date().toISOString(),
         })
-        .eq("id", (await supabase.auth.getUser()).data.user?.id);
+        .eq("id", user.id);
 
       if (error) throw error;
 
-      toast({
-        title: "Welcome aboard! 🎉",
+      console.log("OnboardingLayout: Onboarding completed successfully");
+      
+      toast.success("Welcome aboard! 🎉", {
         description: "Your profile has been set up successfully.",
       });
       
       navigate("/roadmap");
     } catch (error) {
-      console.error("Error completing onboarding:", error);
-      toast({
-        title: "Error",
+      console.error("OnboardingLayout: Error completing onboarding:", error);
+      toast.error("Error", {
         description: "Failed to complete onboarding. Please try again.",
-        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
