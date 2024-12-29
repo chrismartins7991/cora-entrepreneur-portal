@@ -17,7 +17,7 @@ serve(async (req) => {
   try {
     console.log('Starting roadmap generation...');
     
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const openAIApiKey = Deno.env.get('OPEN_API_KEY');
     if (!openAIApiKey) {
       console.error('OpenAI API key not found');
       throw new Error('OpenAI API key not configured');
@@ -58,7 +58,7 @@ serve(async (req) => {
     }
     console.log('Profile found:', profile.id);
 
-    // Initialize OpenAI
+    // Initialize OpenAI with the stored API key
     const openai = new OpenAI({
       apiKey: openAIApiKey,
     });
