@@ -16,32 +16,78 @@ import Automate from "./pages/Automate";
 import Delegate from "./pages/Delegate";
 import Brain from "./pages/Brain";
 import Entrepreneur from "./pages/Entrepreneur";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
-// Protected Route component
+// Protected Route component with onboarding check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Log initial check
-    console.log("ProtectedRoute: Checking authentication state...");
+    console.log("ProtectedRoute: Checking authentication and onboarding state...");
 
-    supabase.auth.onAuthStateChange((event, session) => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log("ProtectedRoute: Session check", { session });
+        
+        if (session?.user) {
+          setIsAuthenticated(true);
+          
+          // Check onboarding status
+          const { data: profile, error } = await supabase
+            .from("profiles")
+            .select("is_onboarded")
+            .eq("id", session.user.id)
+            .single();
+          
+          console.log("ProtectedRoute: Onboarding check", { profile, error });
+          
+          if (!error && profile) {
+            setIsOnboarded(profile.is_onboarded);
+          }
+        } else {
+          setIsAuthenticated(false);
+          setIsOnboarded(null);
+        }
+      } catch (error) {
+        console.error("ProtectedRoute: Error checking auth/onboarding", error);
+        setIsAuthenticated(false);
+        setIsOnboarded(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("ProtectedRoute: Auth state changed", { event, session });
       setIsAuthenticated(!!session);
+      
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_onboarded")
+          .eq("id", session.user.id)
+          .single();
+        
+        setIsOnboarded(profile?.is_onboarded ?? false);
+      } else {
+        setIsOnboarded(null);
+      }
     });
 
-    // Initial session check
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("ProtectedRoute: Initial session check", { session });
-      setIsAuthenticated(!!session);
-    });
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
-  // Show nothing while checking authentication
-  if (isAuthenticated === null) {
-    console.log("ProtectedRoute: Still checking authentication...");
+  if (isLoading || isAuthenticated === null) {
+    console.log("ProtectedRoute: Still loading...");
     return null;
   }
 
@@ -50,7 +96,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  console.log("ProtectedRoute: User is authenticated, rendering protected content");
+  if (isOnboarded === false) {
+    console.log("ProtectedRoute: User not onboarded, redirecting to onboarding");
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  console.log("ProtectedRoute: User is authenticated and onboarded, rendering protected content");
   return <>{children}</>;
 };
 
@@ -62,6 +113,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           
           {/* Protected Routes */}
           <Route

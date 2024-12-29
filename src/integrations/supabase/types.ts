@@ -85,29 +85,62 @@ export type Database = {
       }
       profiles: {
         Row: {
+          business_model: string | null
+          business_name: string | null
+          business_stage: string | null
+          challenges: Json | null
           created_at: string
+          existing_tools: Json | null
+          goal_timeline: string | null
+          goals: Json | null
+          has_strategy: boolean | null
           id: string
+          industry: string | null
           is_onboarded: boolean
+          onboarding_completed_at: string | null
           profile_picture_url: string | null
           role: Database["public"]["Enums"]["user_role"]
+          team_size: number | null
           user_id: string | null
           username: string
         }
         Insert: {
+          business_model?: string | null
+          business_name?: string | null
+          business_stage?: string | null
+          challenges?: Json | null
           created_at?: string
+          existing_tools?: Json | null
+          goal_timeline?: string | null
+          goals?: Json | null
+          has_strategy?: boolean | null
           id?: string
+          industry?: string | null
           is_onboarded?: boolean
+          onboarding_completed_at?: string | null
           profile_picture_url?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          team_size?: number | null
           user_id?: string | null
           username?: string
         }
         Update: {
+          business_model?: string | null
+          business_name?: string | null
+          business_stage?: string | null
+          challenges?: Json | null
           created_at?: string
+          existing_tools?: Json | null
+          goal_timeline?: string | null
+          goals?: Json | null
+          has_strategy?: boolean | null
           id?: string
+          industry?: string | null
           is_onboarded?: boolean
+          onboarding_completed_at?: string | null
           profile_picture_url?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          team_size?: number | null
           user_id?: string | null
           username?: string
         }
