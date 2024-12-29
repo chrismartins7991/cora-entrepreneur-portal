@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { RoadmapData } from "@/types/roadmap";
 
 const sectors = [
   { name: "Core", color: "#6530D3", departments: ["Strategy", "Innovation", "Leadership"] },
@@ -25,7 +26,7 @@ export default function Roadmap() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  // Fetch the roadmap data
+  // Update the query to properly type the roadmap data
   const { data: roadmapData, isLoading, error, refetch } = useQuery({
     queryKey: ['roadmap'],
     queryFn: async () => {
@@ -37,7 +38,13 @@ export default function Roadmap() {
         .single();
 
       if (error) throw error;
-      return data;
+      
+      // Parse the tasks JSON field into our typed structure
+      const parsedTasks = data.tasks as RoadmapData;
+      return {
+        ...data,
+        tasks: parsedTasks
+      };
     }
   });
 
@@ -88,7 +95,6 @@ export default function Roadmap() {
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-black p-2 sm:p-4 overflow-y-auto md:overflow-hidden pb-8">
       <div className="flex flex-col h-[calc(100vh-6rem)] max-h-[calc(100vh-6rem)] overflow-hidden gap-4">
-        {/* View Selection Buttons */}
         <ScrollArea className="w-full whitespace-nowrap pb-2">
           <div className="flex gap-2 px-2">
             <Button
@@ -135,7 +141,6 @@ export default function Roadmap() {
         </ScrollArea>
 
         <div className="flex flex-col lg:flex-row flex-1 gap-4 overflow-hidden">
-          {/* Main Content Area */}
           <div className="flex-1 overflow-auto min-h-[300px] lg:min-h-0">
             <GlassCard className="h-full p-4">
               {currentView === 'neuron' && (
@@ -167,7 +172,7 @@ export default function Roadmap() {
                   ) : roadmapData?.tasks?.milestones ? (
                     <ScrollArea className="h-[calc(100vh-16rem)]">
                       <div className="space-y-6">
-                        {roadmapData.tasks.milestones.map((milestone: any, index: number) => (
+                        {roadmapData.tasks.milestones.map((milestone, index) => (
                           <div key={index} className="space-y-4">
                             <div className="border-l-4 border-purple-500 pl-4">
                               <h3 className="text-lg font-semibold text-white">{milestone.title}</h3>
@@ -175,7 +180,7 @@ export default function Roadmap() {
                               <span className="text-xs text-purple-400">{milestone.timeline}</span>
                             </div>
                             <div className="space-y-2 pl-6">
-                              {milestone.tasks.map((task: any, taskIndex: number) => (
+                              {milestone.tasks.map((task, taskIndex) => (
                                 <div
                                   key={taskIndex}
                                   className="rounded-lg border border-white/10 bg-white/5 p-3"
@@ -210,7 +215,6 @@ export default function Roadmap() {
             </GlassCard>
           </div>
 
-          {/* Chat Sidebar */}
           <div className="w-full lg:w-[300px] flex flex-col gap-4">
             <GlassCard className="flex-1 overflow-y-auto">
               <h3 className="text-base sm:text-lg font-bold mb-4">Chat with Cora</h3>
