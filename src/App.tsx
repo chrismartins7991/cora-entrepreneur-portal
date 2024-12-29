@@ -23,11 +23,11 @@ const queryClient = new QueryClient();
 // Protected Route component with onboarding check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
+  const [isNewUser, setIsNewUser] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("ProtectedRoute: Checking authentication and onboarding state...");
+    console.log("ProtectedRoute: Checking authentication and user status...");
 
     const checkAuth = async () => {
       try {
@@ -37,29 +37,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         if (session?.user) {
           setIsAuthenticated(true);
           
-          // Check onboarding status using maybeSingle() instead of single()
+          // Check if user has a profile and if they've completed onboarding
           const { data: profile, error } = await supabase
             .from("profiles")
-            .select("is_onboarded")
+            .select("is_onboarded, created_at")
             .eq("id", session.user.id)
             .maybeSingle();
           
-          console.log("ProtectedRoute: Onboarding check", { profile, error });
+          console.log("ProtectedRoute: Profile check", { profile, error });
           
           if (!error) {
-            setIsOnboarded(profile?.is_onboarded ?? false);
+            // User is new if they haven't completed onboarding
+            setIsNewUser(profile?.is_onboarded === false);
           } else {
             console.error("Error fetching profile:", error);
-            setIsOnboarded(false);
+            setIsNewUser(false);
           }
         } else {
           setIsAuthenticated(false);
-          setIsOnboarded(null);
+          setIsNewUser(null);
         }
       } catch (error) {
-        console.error("ProtectedRoute: Error checking auth/onboarding", error);
+        console.error("ProtectedRoute: Error checking auth/profile", error);
         setIsAuthenticated(false);
-        setIsOnboarded(null);
+        setIsNewUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -78,9 +79,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           .eq("id", session.user.id)
           .maybeSingle();
         
-        setIsOnboarded(profile?.is_onboarded ?? false);
+        setIsNewUser(profile?.is_onboarded === false);
       } else {
-        setIsOnboarded(null);
+        setIsNewUser(null);
       }
     });
 
@@ -99,12 +100,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (isOnboarded === false) {
-    console.log("ProtectedRoute: User not onboarded, redirecting to onboarding");
+  if (isNewUser) {
+    console.log("ProtectedRoute: New user detected, redirecting to onboarding");
     return <Navigate to="/onboarding" replace />;
   }
 
-  console.log("ProtectedRoute: User is authenticated and onboarded, rendering protected content");
+  console.log("ProtectedRoute: User is authenticated and not new, rendering protected content");
   return <>{children}</>;
 };
 
