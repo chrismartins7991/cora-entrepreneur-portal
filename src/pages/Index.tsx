@@ -21,7 +21,7 @@ const monthlyData = [
 export default function Index() {
   return (
     <div className="h-full w-full overflow-y-auto md:overflow-hidden">
-      <div className="min-h-screen w-full px-4 py-6 pb-24 sm:p-8">
+      <div className="min-h-screen w-full px-4 py-6 pb-16 sm:p-8">
         <div className="mb-6 sm:mb-8 text-center">
           <h1 className="mb-2 text-xl sm:text-2xl md:text-3xl font-bold text-white">Good Afternoon, Christian</h1>
           <p className="text-xs sm:text-sm md:text-base text-white/80">
@@ -65,7 +65,7 @@ export default function Index() {
           {/* Daily Tasks */}
           <GlassCard className="col-span-1 sm:col-span-2 p-4 sm:p-6">
             <h3 className="mb-4 font-semibold text-white text-sm sm:text-base">Daily Tasks</h3>
-            <div className="h-[200px]">
+            <div className="h-[180px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
@@ -90,7 +90,7 @@ export default function Index() {
           {/* Monthly Completion */}
           <GlassCard className="col-span-1 sm:col-span-2 lg:col-span-3 p-4 sm:p-6">
             <h3 className="mb-4 font-semibold text-white text-sm sm:text-base">Monthly Completion</h3>
-            <div className="h-[200px]">
+            <div className="h-[160px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
