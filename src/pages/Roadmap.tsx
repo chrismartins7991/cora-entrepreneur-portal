@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GlassCard } from "@/components/GlassCard";
@@ -26,7 +26,6 @@ export default function Roadmap() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  // Update the query to properly type the roadmap data
   const { data: roadmapData, isLoading, error, refetch } = useQuery({
     queryKey: ['roadmap'],
     queryFn: async () => {
@@ -39,14 +38,38 @@ export default function Roadmap() {
 
       if (error) throw error;
       
-      // Parse the tasks JSON field into our typed structure
-      const parsedTasks = data.tasks as RoadmapData;
+      // Safely type cast the tasks field
+      const parsedTasks = data.tasks as unknown;
+      if (!isValidRoadmapData(parsedTasks)) {
+        throw new Error('Invalid roadmap data structure');
+      }
+      
       return {
         ...data,
         tasks: parsedTasks
       };
     }
   });
+
+  // Type guard to validate the roadmap data structure
+  function isValidRoadmapData(data: unknown): data is RoadmapData {
+    if (!data || typeof data !== 'object') return false;
+    
+    const roadmapData = data as RoadmapData;
+    if (!Array.isArray(roadmapData.milestones)) return false;
+    
+    return roadmapData.milestones.every(milestone => 
+      typeof milestone.title === 'string' &&
+      typeof milestone.description === 'string' &&
+      typeof milestone.timeline === 'string' &&
+      Array.isArray(milestone.tasks) &&
+      milestone.tasks.every(task =>
+        typeof task.title === 'string' &&
+        typeof task.description === 'string' &&
+        ['high', 'medium', 'low'].includes(task.priority)
+      )
+    );
+  }
 
   const generateRoadmap = async () => {
     setIsGenerating(true);
