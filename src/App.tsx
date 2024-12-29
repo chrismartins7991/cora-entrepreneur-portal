@@ -20,13 +20,13 @@ import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
-// Protected Route component with onboarding check
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isNewUser, setIsNewUser] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     console.log("ProtectedRoute: Checking authentication and user status...");
 
     const checkAuth = async () => {
@@ -34,20 +34,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         const { data: { session } } = await supabase.auth.getSession();
         console.log("ProtectedRoute: Session check", { session });
         
+        if (!mounted) return;
+
         if (session?.user) {
           setIsAuthenticated(true);
           
-          // Check if user has a profile and if they've completed onboarding
           const { data: profile, error } = await supabase
             .from("profiles")
-            .select("is_onboarded, created_at")
+            .select("is_onboarded")
             .eq("id", session.user.id)
             .maybeSingle();
           
           console.log("ProtectedRoute: Profile check", { profile, error });
           
+          if (!mounted) return;
+
           if (!error) {
-            // User is new if they haven't completed onboarding
             setIsNewUser(profile?.is_onboarded === false);
           } else {
             console.error("Error fetching profile:", error);
@@ -59,10 +61,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (error) {
         console.error("ProtectedRoute: Error checking auth/profile", error);
-        setIsAuthenticated(false);
-        setIsNewUser(null);
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsNewUser(null);
+        }
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -70,6 +76,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("ProtectedRoute: Auth state changed", { event, session });
+      
+      if (!mounted) return;
+      
       setIsAuthenticated(!!session);
       
       if (session?.user) {
@@ -79,20 +88,27 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           .eq("id", session.user.id)
           .maybeSingle();
         
-        setIsNewUser(profile?.is_onboarded === false);
+        if (mounted) {
+          setIsNewUser(profile?.is_onboarded === false);
+        }
       } else {
         setIsNewUser(null);
       }
     });
 
     return () => {
+      mounted = false;
       authListener.subscription.unsubscribe();
     };
   }, []);
 
-  if (isLoading || isAuthenticated === null) {
-    console.log("ProtectedRoute: Still loading...");
-    return null;
+  if (isLoading) {
+    console.log("ProtectedRoute: Loading...");
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-black">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -119,7 +135,6 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/onboarding" element={<Onboarding />} />
           
-          {/* Protected Routes */}
           <Route
             path="/"
             element={
