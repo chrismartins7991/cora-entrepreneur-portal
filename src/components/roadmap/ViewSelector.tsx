@@ -25,7 +25,7 @@ export function ViewSelector({ currentView, onViewChange }: ViewSelectorProps) {
           className="flex-shrink-0 text-xs sm:text-sm"
         >
           <Brain className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-          Neuron View
+          Roadmap
         </Button>
         <Button
           variant={currentView === "mindmap" ? "default" : "outline"}
