@@ -5,10 +5,8 @@ import { GlassCard } from "@/components/GlassCard";
 import { supabase } from "@/integrations/supabase/client";
 import { RoadmapData } from "@/types/roadmap";
 import { ViewSelector } from "@/components/roadmap/ViewSelector";
-import { ChatSidebar } from "@/components/roadmap/ChatSidebar";
 import { RoadmapContent } from "@/components/roadmap/RoadmapContent";
 
-// Type guard to validate the roadmap data structure
 function isValidRoadmapData(data: unknown): data is RoadmapData {
   if (!data || typeof data !== 'object') return false;
   
@@ -56,7 +54,6 @@ export default function Roadmap() {
         return null;
       }
 
-      // Safely type cast the tasks field
       const parsedTasks = data.tasks as unknown;
       if (!isValidRoadmapData(parsedTasks)) {
         console.error('Invalid roadmap data structure:', parsedTasks);
@@ -99,22 +96,18 @@ export default function Roadmap() {
       <div className="flex flex-col h-[calc(100vh-6rem)] max-h-[calc(100vh-6rem)] overflow-hidden gap-4">
         <ViewSelector currentView={currentView} onViewChange={setCurrentView} />
 
-        <div className="flex flex-col lg:flex-row flex-1 gap-4 overflow-hidden">
-          <div className="flex-1 overflow-auto min-h-[300px] lg:min-h-0">
-            <GlassCard className="h-full p-4">
-              {currentView === 'neuron' && (
-                <RoadmapContent
-                  isGenerating={isGenerating}
-                  isLoading={isLoading}
-                  error={error as Error}
-                  roadmapData={roadmapData}
-                  onGenerateRoadmap={generateRoadmap}
-                />
-              )}
-            </GlassCard>
-          </div>
-
-          <ChatSidebar />
+        <div className="flex-1 overflow-auto min-h-[300px] lg:min-h-0">
+          <GlassCard className="h-full p-4">
+            {currentView === 'neuron' && (
+              <RoadmapContent
+                isGenerating={isGenerating}
+                isLoading={isLoading}
+                error={error as Error}
+                roadmapData={roadmapData}
+                onGenerateRoadmap={generateRoadmap}
+              />
+            )}
+          </GlassCard>
         </div>
       </div>
     </div>
